@@ -9,24 +9,53 @@
 <body>
 
   <header>
-    <h1>The effect of Environmental Variables on Artic Penguin Population</h1>
+    <h1>The effect of Climate Change on Artic Penguin Population</h1>
     <p class="subtitle">Linh Tran</p>
   </header>
 
   <nav>
     <a href="index.html" class="active">Introduction</a>
-    <a href="method.html">Data Preparation</a>
+    <a href="dataprep.html">Data Preparation</a>
     <a href="conclusion.html">Conclusion</a>
   </nav>
 
+    <div style="text-align: center;">
+        <img src="image/introPic.png" alt="Penguins on ice" style="width: 300px; height: auto;"/>
+        <figcaption>
+            <i>
+            Climate change is driving the emperor penguin and Antarctic fur seal to extinction. 
+            <br>
+            Credit: Philip Trathan, IUCN Red List of Threatened Species™
+            </i>
+        </figcaption>
+        </div>
+
   <main>
-    <h2>Introduction</h2>
+    <h2>Project Overview</h2>
     <p>
       Climate change is rapidly altering habitats and food availability in the Antarctic. Among the species impacted, penguins are highly sensitive to these changes, as their life cycles are tightly coupled with changes in sea ice, snow cover, and temperature. Monitoring their populations can reveal underlying environmental shifts, meaning that changes in their populations often reflect broader ecological shifts within the Southern Ocean ecosystem. Understanding these patterns is crucial because penguins occupy a central position in Antarctic food webs, linking krill, fish, and higher predators. Declines or expansions in penguin colonies can therefore signal disruptions in marine productivity and climate stability. Penguin species such as the Adélie, chinstrap, and emperor have each shown distinct responses to warming trends, making them valuable indicators of ecosystem health. The geographic distribution of colonies across the Antarctic continent also provides a natural spatial framework for comparing regional climate impacts. This research focuses on using data mining techniques to detect patterns in penguin population changes over time and space. By integrating biological and climatic datasets, we can better predict future ecological outcomes. Ultimately, this work bridges the gap between raw environmental data and actionable conservation knowledge.
     </p>
+
+    <h2>Existing Gaps</h2>
     <p>
       Current approaches to monitoring penguin populations rely on long-term field surveys, colony counts, and satellite observations to track population trends and assess conservation status. These methods have generated valuable datasets; for example, long-term count data combined with statistical models have revealed significant spatial and temporal variation in African penguin population declines (Sherley et al., 2020). Similarly, climate-driven demographic models have been used to project emperor penguin population dynamics by linking colony-level demographic data with sea ice conditions and climate projections (Jenouvrier 2014). However, many studies rely on data from a limited number of well-monitored colonies and must extrapolate findings to broader regions, introducing uncertainty in global population estimates (Jenouvrier, 2014). The logistical challenges of fieldwork in Antarctica also mean that data collection is often seasonal and spatially sparse, leaving significant gaps in continuous monitoring. Remote sensing technologies have partially addressed this limitation by enabling consistent, large-scale coverage of penguin habitats, but their interpretation requires sophisticated analytical frameworks. In addition, traditional monitoring approaches often analyze population data separately from environmental drivers such as climate variability and sea ice changes. Few studies apply modern data mining or machine learning methods to jointly model ecological and climatic variables at the continental scale. Integrating ecological observations with environmental datasets and advanced spatio-temporal analytics can help uncover deeper patterns and improve conservation planning for penguin populations. This project aims to address these gaps by combining multiple data sources and applying computational methods that are scalable and reproducible.
     </p>
+
+    <h3>Potential Research Questions</h3>
+    <ol>
+      <li>How do different penguin species (Adélie, chinstrap, emperor) respond to climate change in terms of population dynamics?</li>
+      <li>What are the key environmental drivers affecting penguin populations across the Antarctic continent?</li>
+      <li>Can we develop predictive models to forecast future penguin population trends under various climate scenarios?</li>
+      <li>How accurately can machine learning models predict population trends at under-monitored colonies using features learned from well-monitored colonies, and which environmental variables carry the most predictive weight?</li>
+      <li>Does a model trained on population-climate relationships in one Antarctic region (e.g., the Peninsula) generalize to another (e.g., East Antarctica), or do regional differences in sea ice dynamics and prey availability require region-specific models?</li>
+      <li>Can colonies be classified into distinct categories (resilient/rebounding, gradually declining, collapsing) based on their historical trajectories, and what environmental or geographic features distinguish these groups?</li>
+      <li>How do temporal lags between environmental changes (e.g., sea ice loss) and population responses vary across species, and can these lags be quantified to improve predictive modeling?</li>
+      <li>What are the implications of projected penguin population declines for Antarctic food webs, and how might these changes cascade to affect other species such as seals, seabirds, and krill populations?</li>
+      <li>How can the integration of remote sensing data, climate models, and field observations improve the spatial resolution and accuracy of penguin population monitoring?</li>
+      <li>What are the conservation implications of predicted population declines, and how can this information inform policy decisions regarding Antarctic marine protected areas and climate mitigation strategies?</li>
+    </ol>
+
+    <h2>References</h2>
     <p>
       <i>Sherley, Richard B., et al. "The conservation status and population decline of the African penguin deconstructed in space and time." Ecology and Evolution 10.15 (2020): 8506-8516.</i>
     </p>

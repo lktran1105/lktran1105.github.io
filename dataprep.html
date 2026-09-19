@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Preparation</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Data Preparation</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html" class="active">Data Preparation</a>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Method — Sidebar Tabs Example</title>
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-label">DATASETS</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="climate-data">Climate Data (NOAA)</button>
+        <button class="tab-link" data-target="penguin-data">Penguin Population Data (MAPPPD)</button>
+      </nav>
+    </aside>
+
+    <!-- ============ Content panels ============ -->
+    <main class="content">
+
+      <section id="climate-data" class="tab-panel active">
+        <h2><span class="bar"></span>Climate Data: Collection, Cleaning, Exploration, and Visualization</h2>
+        <h3>1. Data Source and Access Method</h3>
+        <p>Climate data for this project was obtained from the National Oceanic and Atmospheric Administration's (NOAA) National Centers for Environmental Information (NCEI), via their Climate Data Online (CDO) Web Services API. This API was chosen over a static file download because it allows for filtered, up-to-date queries against NOAA's continuously updated historical climate record, rather than relying on a fixed snapshot file that could become outdated. Specifically, I used the Global Summary of the Year (GSOY) dataset, which provides yearly and monthly aggregated climate summaries from land-based weather stations worldwide, filtered to stations located in Antarctica.</p>
+        <ul>
+          <li>Website: NOAA Climate Data Online (CDO)</li>
+          <li>API Endpoint: https://www.ncei.noaa.gov/cdo-web/api/v2/data</li>
+          <li>Dataset ID: GSOY</li>
+          <li>Parameters Queried: Year, Month, Station ID, Average Temperature, Total Precipitation, Sea Ice Extent</li>
+          <li>Example GET Request:</li>
+          <code>curl -H "token: YOUR_API_TOKEN" "https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GSOY&stationid=GHCND:USW00094728&startdate=2000-01-01&enddate=2020-12-31"</code>
+          <li>Raw Data: data/gsom_antarctica_raw.csv </li> 
+        </ul>
+        <p>Antarctica was queried as a single aggregated region (FIPS location code AY) rather than by individual research station, because our companion penguin population dataset does not report climate conditions at the individual colony level.</p>
+        
+        <h3>2. Data Cleaning and Preprocessing</h3>
+        <p>Here is an exploration of the raw data:</p>
+        <a href=image/rawTempExplore.png target="_blank">
+          <img src=image/rawTempExplore.png alt="Monthly Average Temperature" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+      <ul>
+        <li> Each observation reported as an individual record containing a station identifier, attributes, a date, a data type code, and a value</li>
+        <li> No missing value</li>
+      </ul>
+
+        <h4>2.1 Drop unnecessary columns</h4>
+        <p>I dropped the following columns: attributes, datatype, and station. The station column was dropped because we aggregated the data by year and month for all stations in Antarctica. The attributes columnwas dropped because they were not relevant to our analysi, and the datatype column was dropped because it was not needed for our analysis.</p>
+      
+        <h4>2.2 Convert date column to datetime format</h4>
+        <p>I converted the date column to datetime format using the pandas to_datetime function. This allowed me to easily extract the year and month from the date column for aggregation.</p>
+
+        <h4>2.3 Aggregate data by year and month</h4>
+        <p>I aggregated the data by year and month using the pandas groupby function. This allowed me to calculate the average temperature and total precipitation for each month and year in Antarctica.</p>
+        <p>Here is the data after cleaning and preprocessing:</p>
+        <a href=image/tempClean.png target="_blank">
+            <img src=image/tempClean.png alt="Monthly Average Temperature" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+        <h3>3. Visualization</h3>
+        <p><b>Antarctica Average Temperature (2016–2026):</b></p>
+        <a href="visualization/climateData/monthly avg temp.png" target="_blank">
+          <img src="visualization/climateData/monthly avg temp.png" alt="Monthly Average Temperature" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: The full time series shows a strong, consistent seasonal cycle every year, swinging from near 0°C in the austral summer down to roughly -25°C in winter. One clear exception stands out — a sharp drop to about -32°C in mid-2022 — making it the coldest single month across the entire ten-year record.</p>
+
+        <p><b>Seasonal Cycle by Month:</b></p>
+        <a href="visualization/climateData/seasonal temp cycle.png" target="_blank">
+          <img src="visualization/climateData/seasonal temp cycle.png" alt="Seasonal Cycle by Month" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: Variability is not evenly distributed across the year — summer months (December–February) show tight, consistent boxes, while transitional and winter months (April–August) show much wider spreads and more outliers. July stands out specifically, with an extreme outlier near -32°C sitting well below the rest of that month's typical range, reinforcing that this single event (from 2022) is unusual rather than representative.</p>
+        
+        <p><b>Annual Average Temperature Trend:</b></p>
+        <a href="visualization/climateData/annual avg temp trend.png" target="_blank">
+          <img src="visualization/climateData/annual avg temp trend.png"  alt="Annual Average Temperature Trend" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: The linear trend shows a slight cooling of about -0.131°C per year, but this is small relative to the year-to-year swings in the data — 2022 dips sharply to roughly -15.9°C before rebounding to about -12.7°C in 2023. This volatility suggests that a single decade of Antarctic-wide yearly averages isn't yet long enough to distinguish a genuine warming/cooling trend from natural interannual variability.</p>
+        
+        <p><b>Monthly Temperature Heatmap by Year:</b></p>
+        <a href="visualization/climateData/monthly temp heatmap.png" target="_blank">
+          <img src="visualization/climateData/monthly temp heatmap.png" alt="Monthly Temperature Heatmap by Year" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: The heatmap makes the seasonal pattern highly visible column-by-column, with January and December consistently appearing warm (dark red) and June through August consistently cold (blue) across nearly every year. It also visually surfaces the dataset's data gaps and outliers at once — the scattered white cells mark missing months, while the single near-black cell in July 2022 confirms it as the record's most extreme cold anomaly.</p>
+      </section>
+
+
+      <section id="penguin-data" class="tab-panel">
+        <h2><span class="bar"></span>Penguin Data: Collection, Cleaning, Exploration, and Visualization</h2>
+        <h3>1. Data Source and Access Method</h3>
+          <p>Penguin population data for this project was obtained as a downloaded CSV file, rather than through an API, since penguin colony census records are compiled and distributed as static datasets rather than a live queryable service. Each record represents a single count of a specific penguin species at a specific Antarctic colony (site) during a specific breeding season, along with metadata describing the survey (such as site location, count type, and survey vantage point).</p>
+          <ul>
+            <li>Website: https://www.penguinmap.com/mapppd/</li>
+            <li>File Format: CSV</li>
+            <li>Original Columns: site_name, site_id, ccamlr_region, longitude_epsg_4326, latitude_epsg_4326, common_name, count, count_type, vantage, accuracy, reference, season_starting, day</li>
+            <li>Species Covered: Adélie, chinstrap, gentoo, emperor, and macaroni penguins</li>
+            <li>Raw Data: data/penguin_data.csv</li>
+          </ul>
+          <p>Unlike the climate dataset, which was aggregated to a single continent-wide value per month, the penguin dataset was kept at the individual colony (site) level throughout cleaning, since colony-level identity is necessary to verify that population totals aren't inadvertently double-counted or skewed by inconsistent site reporting across years.</p>
+          
+          <h3>2. Data Cleaning and Preprocessing</h3>
+            <p>Here is an exploration of the raw data:</p>
+            <a href=image/rawPenguin.png target="_blank">
+              <img src=image/rawPenguin.png alt="Raw Penguin Data Exploration" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+            <ul>
+              <li>Each record represents one species count at one site on one specific date</li>
+              <li>Some records were missing a survey <code>month</code>, <code>day</code>, <code>month</code>, <code>penguin_count</code>, <code>accuracy</code>, and <code>vantage</code> value</li>
+            </ul>
+
+          <h4>2.1 Drop unnecessary columns</h4>
+          <p>I dropped the following columns: site_name, reference, site_id, ccamlr_region, longitude_epsg_4326, latitude_epsg_4326, day, season_starting, accuracy, count_type, and vantage. These fields described survey metadata and geographic detail not needed for the population-versus-climate analysis, which only requires species, site identity (for aggregation integrity), year, month, and count.</p>
+
+          <h4>2.2 Filter to years 2016 and onward</h4>
+          <p>Since the climate dataset only covers 2016 through 2026, the penguin dataset was filtered to the same range so the two datasets could later be merged on a consistent yearly basis. Historical penguin records predating 2016 were excluded from this analysis, though they remain part of the original raw file for reference.</p>
+
+          <h4>2.3 Impute missing survey months</h4>
+          <p>Several records were missing a <code>month</code> value, which — unlike the climate dataset's missing temperature values — could not be filled using a numeric average, since month represents a cyclical survey timing rather than a continuous measurement. Instead, missing months were filled using the most common (mode) survey month recorded for that same site and species combination, based on the assumption that a given colony is typically surveyed around the same time each season; a <code>month_is_imputed</code> flag column was added to track which records were estimated this way.</p>
+          
+          <p>Here is the data after cleaning and preprocessing:</p>
+          <a href=image/cleanPenguin.png target="_blank">
+            <img src=image/cleanPenguin.png alt="Cleaned Penguin Data Exploration" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+          </a>
+
+        <h3>Visualizations</h3>
+        <p><b>Top 10 Sites by Total Recorded Penguin Count:</b></p>
+        <a href="visualization/penguinData/top10Sites.png" target="_blank">
+          <img src="visualization/penguinData/top10Sites.png" alt="Top 10 Sites by Total Count" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: CRZW is dramatically the largest colony in the dataset, with a total recorded count of roughly 1.85 million — more than double the second-largest site, ADAR (~0.85 million). This scale gap means a single site can disproportionately drive any continent-wide population total, so its reporting consistency matters far more than that of smaller colonies further down the list.</p>
+
+        <p><b>Total Penguin Count by Species Over Time:</b></p>
+        <a href="visualization/penguinData/totalPenguinSpecies.png" target="_blank">
+          <img src="visualization/penguinData/totalPenguinSpecies.png" alt="Population Trend by Species" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: Adelie penguins dominate the overall count and show extreme year-to-year volatility, swinging from about 1.19 million in 2018 down to roughly 50,000 in 2020, while the other four species remain comparatively flat and small throughout the whole period. Chinstrap penguins are the one notable exception, spiking to about 400,000 in 2020 during the same year Adelie counts collapsed — a pattern worth investigating further as either a real ecological shift or a change in survey coverage.</p>
+
+        <p><b>Total Penguin Count Across All Sites by Year:</b></p>
+        <a href="visualization/penguinData/totalPenguin.png" target="_blank">
+          <img src="visualization/penguinData/totalPenguin.png" alt="Total Penguin Count by Year" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: The continent-wide total fluctuates substantially rather than trending steadily in one direction, peaking near 1.39 million in 2018 and dropping to a low of about 340,000 in 2021 before declining again toward 2026. Because this chart aggregates every species and site together, its swings are heavily influenced by which large colonies — like CRZW or ADAR — happened to report in a given year, rather than reflecting uniform population change across all of Antarctica.</p>
+        <p><b>Number of Distinct Colonies Monitored per Species:</b></p>
+        <a href="visualization/penguinData/numberOfColonies.png" target="_blank">
+          <img src="visualization/penguinData/numberOfColonies.png" alt="Colonies Monitored per Species" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: Chinstrap penguins are monitored at far more sites (about 183) than any other species, while king penguins are tracked at only around 4 colonies. This means conclusions drawn about king or macaroni penguins carry substantially more uncertainty when generalized to the broader Antarctic population, since so few colonies represent them in this dataset.</p>
+
+        <p><b>Observed vs. Imputed-Month Records by Year:</b></p>
+        <a href="visualization/penguinData/imputedMonths.png" target="_blank">
+          <img src="visualization/penguinData/imputedMonths.png" alt="Observed vs Imputed Records" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: Imputed-month records are concentrated in the earlier years of the dataset, especially 2016 through 2020, with 2019 showing the largest share of imputed data relative to its total record count. From 2021 onward, imputation drops off sharply, suggesting survey documentation practices improved over time and making recent years more reliable for month-specific analysis.</p>
+
+        <p><b>Total Penguin Count by Species and Year:</b></p>
+        <a href="visualization/penguinData/penguinHeatmap.png" target="_blank">
+          <img src="visualization/penguinData/penguinHeatmap.png" alt="Species by Year Heatmap" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Insight: Adelie penguins account for the single darkest cell in the entire heatmap, in 2018, consistent with the sharp peak seen in the species trend chart, while emperor, king, and macaroni penguins remain visibly pale across nearly every year. This reinforces that Adelie penguins numerically dominate this dataset, and that smaller or rarer species contribute so little to the total that their individual patterns are easy to overlook unless examined separately.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>
