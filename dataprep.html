@@ -176,6 +176,13 @@
 
       <section id="climate-data" class="tab-panel active">
         <h2><span class="bar"></span>Climate Data: Collection, Cleaning, Exploration, and Visualization</h2>
+        
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/MLDS_project.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+
+
         <h3>1. Data Source and Access Method</h3>
         <p>Climate data for this project was obtained from the National Oceanic and Atmospheric Administration's (NOAA) National Centers for Environmental Information (NCEI), via their Climate Data Online (CDO) Web Services API. This API was chosen over a static file download because it allows for filtered, up-to-date queries against NOAA's continuously updated historical climate record, rather than relying on a fixed snapshot file that could become outdated. Specifically, I used the Global Summary of the Year (GSOY) dataset, which provides yearly and monthly aggregated climate summaries from land-based weather stations worldwide, filtered to stations located in Antarctica.</p>
         <ul>
@@ -185,12 +192,13 @@
           <li>Parameters Queried: Year, Month, Station ID, Average Temperature, Total Precipitation, Sea Ice Extent</li>
           <li>Example GET Request:</li>
           <code>curl -H "token: YOUR_API_TOKEN" "https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GSOY&stationid=GHCND:USW00094728&startdate=2000-01-01&enddate=2020-12-31"</code>
-          <li>Raw Data: data/gsom_antarctica_raw.csv </li> 
+
         </ul>
         <p>Antarctica was queried as a single aggregated region (FIPS location code AY) rather than by individual research station, because our companion penguin population dataset does not report climate conditions at the individual colony level.</p>
         
         <h3>2. Data Cleaning and Preprocessing</h3>
-        <p>Here is an exploration of the raw data:</p>
+        <p>Raw Dataset: <a href="data/gsom_antarctica_raw.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p> 
+        <p>Here is an exploration of the raw data:</p> 
         <a href=image/rawTempExplore.png target="_blank">
           <img src=image/rawTempExplore.png alt="Monthly Average Temperature" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
         </a>
@@ -208,6 +216,8 @@
         <h4>2.3 Aggregate data by year and month</h4>
         <p>I aggregated the data by year and month using the pandas groupby function. This allowed me to calculate the average temperature and total precipitation for each month and year in Antarctica.</p>
         <p>Here is the data after cleaning and preprocessing:</p>
+        <p>Clean Dataset: <a href="data/clean_climate_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p> 
+
         <a href=image/tempClean.png target="_blank">
             <img src=image/tempClean.png alt="Monthly Average Temperature" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
         </a>
@@ -241,6 +251,12 @@
 
       <section id="penguin-data" class="tab-panel">
         <h2><span class="bar"></span>Penguin Data: Collection, Cleaning, Exploration, and Visualization</h2>
+        
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/MLDS_project.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+
         <h3>1. Data Source and Access Method</h3>
           <p>Penguin population data for this project was obtained as a downloaded CSV file, rather than through an API, since penguin colony census records are compiled and distributed as static datasets rather than a live queryable service. Each record represents a single count of a specific penguin species at a specific Antarctic colony (site) during a specific breeding season, along with metadata describing the survey (such as site location, count type, and survey vantage point).</p>
           <ul>
@@ -248,11 +264,11 @@
             <li>File Format: CSV</li>
             <li>Original Columns: site_name, site_id, ccamlr_region, longitude_epsg_4326, latitude_epsg_4326, common_name, count, count_type, vantage, accuracy, reference, season_starting, day</li>
             <li>Species Covered: Adélie, chinstrap, gentoo, emperor, and macaroni penguins</li>
-            <li>Raw Data: data/penguin_data.csv</li>
           </ul>
           <p>Unlike the climate dataset, which was aggregated to a single continent-wide value per month, the penguin dataset was kept at the individual colony (site) level throughout cleaning, since colony-level identity is necessary to verify that population totals aren't inadvertently double-counted or skewed by inconsistent site reporting across years.</p>
           
           <h3>2. Data Cleaning and Preprocessing</h3>
+            <p>Raw Dataset: <a href="data/penguin_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p> 
             <p>Here is an exploration of the raw data:</p>
             <a href=image/rawPenguin.png target="_blank">
               <img src=image/rawPenguin.png alt="Raw Penguin Data Exploration" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
@@ -272,6 +288,8 @@
           <p>Several records were missing a <code>month</code> value, which — unlike the climate dataset's missing temperature values — could not be filled using a numeric average, since month represents a cyclical survey timing rather than a continuous measurement. Instead, missing months were filled using the most common (mode) survey month recorded for that same site and species combination, based on the assumption that a given colony is typically surveyed around the same time each season; a <code>month_is_imputed</code> flag column was added to track which records were estimated this way.</p>
           
           <p>Here is the data after cleaning and preprocessing:</p>
+          <p>Clean Dataset: <a href="data/clean_penguin_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p> 
+
           <a href=image/cleanPenguin.png target="_blank">
             <img src=image/cleanPenguin.png alt="Cleaned Penguin Data Exploration" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
           </a>
