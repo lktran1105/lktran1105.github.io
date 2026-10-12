@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clustering</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Clustering</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <a href="clustering.html" class="active">Clustering</a>
+    <a href="pca.html">Principle Component Analysis</a>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Method — Sidebar Tabs Example</title>
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-label">CLUSTERING</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <!-- ============ Content panels ============ -->
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. What Is Clustering?</h3>
+        <p>Clustering is an unsupervised machine learning technique used to group observations into subsets, or clusters, such that items within the same cluster are more similar to one another than they are to items in other clusters. Unlike supervised learning, clustering requires no predefined labels — the algorithm discovers structure directly from the data itself. This makes clustering particularly well suited to exploratory analysis, where the goal is to uncover patterns we did not explicitly set out to find, rather than to predict a known outcome.</p>
+
+        <figure>
+          <div class="img-slot">
+            <img src="image/clusteringExample.png" alt="Conceptual diagram of clustering grouping similar data points" style="width: 100%; height: auto;"/>
+          </div>
+          <figcaption>A conceptual illustration of clustering: points are grouped based on similarity rather than predefined category labels. <i>source: Google Developers</i></figcaption>
+        </figure>
+
+        <h3>2. Partitional vs. Hierarchical Clustering</h3>
+        <p>There are two broad families of clustering approaches:</p>
+        <p><b>Partitional clustering</b> (such as k-means or k-medoids) divides the dataset into a fixed number of non-overlapping clusters, k, chosen in advance. The algorithm iteratively assigns each point to the nearest cluster center and updates those centers to minimize within-cluster variance. Partitional methods are computationally efficient and scale well to larger datasets, but they require the analyst to decide on the number of clusters beforehand, and they can be sensitive to outliers and to how the initial cluster centers are chosen.</p>
+        <p><b>Hierarchical clustering</b> instead builds a nested tree of clusters, either agglomeratively (starting with each observation as its own cluster and iteratively merging the closest pairs) or divisively (starting with one cluster and recursively splitting it). The result is a dendrogram that shows how observations group together at every level of granularity simultaneously, without requiring a predetermined number of clusters. This makes hierarchical clustering especially useful during the discovery phase of analysis, since it reveals both coarse and fine-grained structure, and the number of clusters can be chosen after the fact by deciding where to "cut" the tree.</p>
+
+        <figure>
+          <div class="img-slot">
+            <img src="image/partialVsHierarchical.png" alt="Side-by-side comparison of partitional and hierarchical clustering" style="width: 100%; height: auto;"/>
+          </div>
+          <figcaption>Partitional clustering assigns points to a fixed number of clusters around central points, while hierarchical clustering builds a nested dendrogram of groupings. <i>source: upGrad.com</i></figcaption>
+        </figure>
+
+        <h3>3. Distance Metrics</h3>
+        <p>Every clustering algorithm depends on a notion of "closeness" between observations, defined by a distance metric. The choice of metric directly shapes which clusters emerge, so selecting an appropriate one is as important as choosing the algorithm itself. For this project, the following metrics are most relevant:</p>
+        <ul>
+          <li><b>Euclidean distance</b>: the standard straight-line distance between two points in feature space. This is the default metric for k-means and works well when features are continuous and on comparable scales (e.g., standardized temperature or count values).</li>
+          <li><b>Manhattan distance</b>: the sum of absolute differences across dimensions. It is more robust to outliers than Euclidean distance, which is useful given the extreme values present in both our climate data (e.g., the 2022 cold anomaly) and our penguin count data (colony sizes spanning several orders of magnitude).</li>
+          <li><b>Dynamic Time Warping (DTW)</b>: a specialized distance metric for comparing time series that may be similarly shaped but shifted or stretched in time. This is particularly relevant for comparing year-to-year climate profiles or multi-year population trends across colonies, where two sites might follow a similar trajectory but reach peaks or troughs in different years.</li>
+        </ul>
+
+        <h3>4. How We Plan to Use Clustering for Discovery</h3>
+        <p>Clustering will be used in this project primarily as an exploratory tool to surface patterns of levels (sizes) and variabilities in penguin colonies at different sites, answering questions such as if penguin colonies cluster more by site or by species.
+        </p>
+      </section>
+
+
+      <section id="data prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for Clustering</h2>
+        <h3>1. Clustering Data</h3>
+            <p>
+              Clustering is an unsupervised learning method: it groups observations based only on how similar
+              they are, without being told what the "correct" groups are. For this reason, clustering requires
+              <strong>unlabeled, numeric data</strong>. Algorithms such as k-means and hierarchical clustering
+              measure similarity as a distance between points (Euclidean or cosine distance), and distances can
+              only be computed on numbers. Text columns such as "site IDs" or "species names" cannot be used in
+              these calculations, and labels must be removed so that the algorithm discovers structure on its
+              own rather than simply reproducing categories we already know.
+            </p>          
+        <h3>2. Preparing Penguin Data for Clustering</h3>
+            <p>
+              The raw penguin dataset contains 1208 survey records, each giving the penguin count at one site
+              for one species in one month and year. Because the research question asks whether colonies group
+              more by <em>site</em> or by <em>species</em>, each colony (a site–species combination, such as
+              ADAR Adélie penguin) was used as a single observation. Penguin counts were first standardized, because colony sizes range from a few dozen to over 500,000
+              birds, and the log scale compares colonies by proportional rather than absolute differences.
+              For each colony, two numeric features were then computed: <strong>level</strong>, the mean
+              log count (typical colony size), and <strong>variability</strong>, the standard deviation of the
+              log counts (how much the colony fluctuates between surveys). Of the 391 colonies, only the 106
+              with at least three surveys were kept, since variability cannot be reliably estimated from one
+              or two counts.
+            </p>
+
+            <p>
+              Finally, the labels (the colony name, site ID, and species) and the helper column recording the
+              number of surveys were removed, leaving only the two numeric features. These were standardized
+              to a mean of 0 and a standard deviation of 1 so that neither feature dominates the distance
+              calculations.
+            </p>
+          
+          <p>Data for Clustering: <a href="data/penguinColony_cluster_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p> 
+
+          <a href=image/penguinClusterData.png target="_blank">
+            <img src=image/penguinClusterData.png alt="Cleaned Penguin Cluster Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+          </a>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <p><i>Scroll to "Clustering" section</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/MLDS_project.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+        <h3>I. Partial Clustering</h3>
+          <h4>Choosing K for k-means clustering</h4>
+          <p><strong>1. Elbow Method</strong></p>
+            <a href=image/elbowMethod.png target="_blank">
+              <img src=image/elbowMethod.png alt="Elbow Method for Choosing K" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+            <p>
+              The elbow method plots the Within-Cluster Sum of Squares (WCSS) against k. WCSS always decreases as k increases, so instead of minimizing it, we look for the “elbow”: the point where adding more clusters stops reducing WCSS substantially. Here the curve flattens after k = 4, so the elbow method suggests k = 4.
+            </p>         
+            
+            <p><strong>2. Silhouette Method</strong></p>
+            <a href=image/silhouetteMethod.png target="_blank">
+              <img src=image/silhouetteMethod.png alt="Silhouette Method for Choosing K" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+            <p>
+              The silhouette method measures, for each point, how close it is to its own cluster compared to the nearest other cluster, then averages this score across all points (range −1 to 1, higher is better). The average silhouette score peaks at k = 2 (≈ 0.65), meaning the data splits most clearly into two well-separated groups.            
+            </p>
+            
+            <p>
+              <b>Conclusion:</b> The two methods disagree because they measure different things: WCSS rewards compact clusters, while silhouette rewards well-separated ones. Together they suggest the data has one strong natural split (k = 2), with further divisions (k = 4) tightening the clusters but not creating clearly distinct groups. 
+            </p> 
+
+            <h4>Clustering with Different K Values</h4>
+            <p><strong>1. K = 2</strong></p>
+            <a href=image/k2Cluster.png target="_blank">
+              <img src=image/k2Cluster.png alt="K = 2 Clustering" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+            <p><strong>2. K = 3</strong></p>
+            <a href=image/k3Cluster.png target="_blank">
+              <img src=image/k3Cluster.png alt="K = 3 Clustering" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+            <p><strong>3. K = 4</strong></p>
+            <a href=image/k4Cluster.png target="_blank">
+              <img src=image/k4Cluster.png alt="K = 4 Clustering" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+            </a>
+
+          <h3>II. Hierarchical Clustering</h3>
+          <a href=image/hierarchicalCluster.png target="_blank">
+              <img src=image/hierarchicalCluster.png alt="Hierarchical Clustering" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+          </a>
+          <p>
+            The hierarchical clustering suggests k = 3: the largest vertical gap without any merges lies between distances of roughly 0.77 and 1.25, so cutting the tree in that range yields three well-separated groups. A cut at around 0.6 would split the largest group in two, giving k = 4, which matches the elbow method’s suggestion for k-means.          
+          </p>
+          <p>
+            <strong>Conclusions:</strong> The two methods therefore broadly agree on a small number of clusters (2–4), though each criterion points to a slightly different value: silhouette favored k = 2, the elbow favored k = 4, and the dendrogram favors k = 3         
+          </p>
+
+      </section>
+      
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+        <p>
+          Clustering the Antarctic penguin colonies revealed several things about how these populations behave.
+        </p>
+        <p>
+        First, colony sizes span several orders of magnitude, from a few dozen birds to over 500,000, so comparing colonies required a log scale to capture proportional rather than absolute differences.
+
+        </p>
+        <p>
+      Second, monitoring is uneven: many colonies were surveyed only once or twice, which made variability impossible to estimate for a large share of them and limited the analysis to the better-surveyed colonies.
+        </p>
+        <p>
+Level (colony size) drives most of the cluster structure, while variability mainly isolates a small group of highly variable colonies. Three of the four clusters line up along level. Yellow (small colonies), purple (medium), and green (large) have centroids at roughly −1.65, 0, and +1.0 on the x-axis, while their variability centroids are all close to 0 (green is slightly below at about −0.6).
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>
