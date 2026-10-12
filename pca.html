@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Principal Component Analysis</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --accent-bg: #fafafa;
+      --text: #1f2328;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --page-bg: #f4f4f6;
+    }
+
+    /* ---------- Layout: sidebar + content ---------- */
+
+    .layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ---------- Sidebar ---------- */
+
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .sidebar-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      padding: 0 0.75rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .tab-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      border-left: 3px solid transparent;
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .tab-link:hover {
+      background: #f9fafb;
+      color: var(--text);
+    }
+
+    .tab-link.active {
+      background: var(--accent-bg);
+      border-left-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ---------- Content ---------- */
+
+    .content {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      min-height: 400px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .tab-panel h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.3rem;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      margin: 0 0 1.25rem;
+    }
+
+    .tab-panel h2 .bar {
+      width: 4px;
+      height: 1.4rem;
+      background: var(--accent);
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .tab-panel h3 {
+      font-size: 1.05rem;
+      margin: 0 0 1rem;
+    }
+
+    .info-block {
+      background: var(--accent-bg);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      color: #4b5563;
+      font-style: italic;
+    }
+
+    .info-block strong,
+    .info-block em {
+      display: block;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Principal Component Analysis</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <a href="clustering.html">Clustering</a>
+    <a href="pca.html" class="active">Principal Component Analysis</a>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-label">PCA</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data-prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <!-- ============ Content panels ============ -->
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. What Is Principal Component Analysis?</h3>
+        <p>Principal Component Analysis (PCA) is an unsupervised dimensionality reduction technique. It re-expresses a dataset with many correlated numeric features as a smaller set of new, uncorrelated features called principal components. Each component is a weighted combination of the original features, and the components are ordered so that the first captures as much of the data's variance as possible, the second captures as much of the remaining variance as possible while being orthogonal to the first, and so on. Keeping only the first few components compresses the data while preserving most of its structure.</p>
+
+        <figure>
+          <div class="img-slot">
+            <img src="image/pcaConcept.jpg" alt="Conceptual diagram of PCA projecting data onto principal components" style="width: 100%; height: auto;"/>
+          </div>
+          <figcaption>A conceptual illustration of PCA: data is projected onto new axes that point in the directions of greatest variance. <i>source: Machine Learning Pills</i></figcaption>
+        </figure>
+
+        <h3>2. What Is Dimensionality Reduction?</h3>
+        <figure>
+          <div class="img-slot">
+            <img src="image/dimensionalityReduction.png" alt="Conceptual diagram of dimensionality reduction" style="width: 100%; height: auto;"/>
+          </div>
+          <figcaption>A conceptual illustration of dimensionality reduction. <i>source: sc Best Practices.com</i></figcaption>
+        </figure>
+
+        <p>Every feature in a dataset is a dimension. A table with 50 numeric columns describes each observation as a point in 50-dimensional space. Dimensionality reduction is the process of transforming such data into a smaller number of dimensions while keeping as much of the meaningful information as possible. There are two broad approaches:</p>
+        <ul>
+          <li><b>Feature selection</b>: keep a subset of the original features and discard the rest.</li>
+          <li><b>Feature extraction</b>: build new, fewer features from combinations of the original ones. PCA is a feature extraction method, and it is linear, meaning each new feature is a weighted sum of the originals.</li>
+        </ul>
+        <p>Reducing dimensionality matters for several reasons:</p>
+        <ul>
+          <li><b>Simpler analysis</b>: fewer variables are easier to describe, model, and explain, and models fit on fewer inputs are less prone to overfitting.</li>
+          <li><b>Visualization</b>: people can only look at two or three dimensions at once. Projecting the data onto two or three components makes it possible to plot every observation and see groups, trends, and outliers.</li>
+          <li><b>Removing redundancy and noise</b>: correlated features repeat the same information. Combining them into one component consolidates the signal, and the low-variance components that are dropped often contain mostly noise.</li>
+          <li><b>Efficiency</b>: less data to store and faster computation for downstream methods such as clustering and regression.</li>
+        </ul>
+
+        <h3>3. Challenges of High-Dimensional Data</h3>
+        <p>As the number of features grows, data becomes harder to work with. These problems are often grouped under the term <i>curse of dimensionality</i>:</p>
+        <ul>
+          <li><b>Sparsity</b>: the volume of the space grows exponentially with each added dimension, so a fixed number of observations spreads out thinly. Observations end up far from each other, and reliable patterns require far more data.</li>
+          <li><b>Distances lose meaning</b>: in very high dimensions the gap between the nearest and farthest neighbor shrinks. Methods that depend on distance, including k-means, hierarchical clustering, and k-nearest neighbors, become less effective.</li>
+          <li><b>Overfitting</b>: when features are numerous relative to observations, a model can fit noise instead of real structure and then perform poorly on new data.</li>
+          <li><b>Multicollinearity</b>: many features are correlated with one another, which makes model coefficients unstable and difficult to interpret.</li>
+          <li><b>Computational cost</b>: storage and run time grow with the number of features.</li>
+          <li><b>Hard to visualize and interpret</b>: there is no direct way to plot more than three dimensions, so structure stays hidden.</li>
+        </ul>
+        <p>Dimensionality reduction addresses these problems directly. By compressing many correlated features into a few components, PCA densifies the data, restores more meaningful distances, removes collinearity (components are uncorrelated by construction), lowers the risk of overfitting, cuts computation, and allows the data to be plotted in two or three dimensions.</p>
+
+        <h3>4. Eigenvalues and Eigenvectors</h3>
+        <p>Eigenvalues and eigenvectors are the mathematical core of PCA. A matrix can be thought of as a transformation that stretches, rotates, or shears space. For most vectors, applying the matrix changes both their length and their direction. An <b>eigenvector</b> of a square matrix <i>A</i> is a special non-zero vector whose direction is unchanged by the transformation; it is only scaled. The factor by which it is scaled is its <b>eigenvalue</b>:</p>
+        <p style="text-align: center;"><i>A v = &lambda; v</i></p>
+        <p>where <i>v</i> is the eigenvector and <i>&lambda;</i> is the eigenvalue. Eigenvectors point along the axes of the transformation, and eigenvalues say how strongly it acts along each axis.</p>
+        <p>In PCA the matrix is the <b>covariance matrix</b> of the standardized features, which is square and symmetric. This gives its eigenvectors and eigenvalues useful properties:</p>
+        <ul>
+          <li><b>Eigenvectors are principal component directions</b>: each eigenvector is a set of weights (loadings) over the original features, defining one principal component axis.</li>
+          <li><b>Eigenvectors are orthogonal</b>: because the covariance matrix is symmetric, its eigenvectors are perpendicular to one another, so the components are uncorrelated.</li>
+          <li><b>Eigenvalues are variances</b>: each eigenvalue equals the variance of the data along its eigenvector. The largest eigenvalue belongs to PC1, the direction of greatest spread, the next to PC2, and so on.</li>
+          <li><b>Explained variance ratio</b>: dividing an eigenvalue by the sum of all eigenvalues gives the proportion of total variance explained by that component. For <i>p</i> standardized features, the eigenvalues sum to <i>p</i>.</li>
+        </ul>
+        <p>This is why eigenvalues drive dimensionality reduction. Components with large eigenvalues carry most of the information and are kept, while components with small eigenvalues add little and can be dropped.</p>
+
+        
+
+      </section>
+
+
+      <section id="data-prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for PCA</h2>
+
+        <h3>1. PCA Data</h3>
+        <p>
+          Like clustering, PCA is an unsupervised method and requires <strong>unlabeled, numeric data</strong>.
+          It operates on the covariance structure of the features, so every column must be numeric and free of
+          missing values. Text columns such as site IDs or species names cannot be used and are removed before the
+          analysis. Because PCA looks for directions of maximum variance, features must also be on comparable
+          scales; otherwise the feature with the largest numeric range would dominate the first component.
+        </p>
+
+        <h3>2. Preparing the Data for PCA</h3>
+          <h2>Data Preparation for PCA</h2>
+            <p>
+                The climate dataset originally contained 113 monthly temperature records from January 2016 to
+                January 2026, stored in a long format with one row per month and a single temperature column.
+                With only one numeric feature, this format is not suitable for PCA. The data was therefore
+                reshaped so that <strong>each year is one observation and each month is one feature</strong>,
+                producing a table of 10 years (2016–2025) by 12 monthly temperature columns. January 2026 was
+                removed because it was the only month recorded for that year. Eight months were missing across
+                the remaining years, and each was filled with the average temperature for that month across all
+                years. The original date, year, and month columns no longer appear as features: the year serves
+                only as the row label, and the months become the column headers. Finally, the 12 monthly columns
+                were standardized to a mean of 0 and a standard deviation of 1 before PCA was applied.
+            </p>
+
+            <p>
+                One limitation of this format is that it contains only 10 observations for 12 features. PCA can
+                still be computed, but the resulting components are based on a small number of years and should
+                be treated as exploratory.
+            </p>
+
+        <p>Data for PCA: <a href="data/climate_pca_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+
+        <a href="image/pcaData.png" target="_blank">
+          <img src="image/pcaData.png" alt="Cleaned data used for PCA" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <p><i>Scroll to "PCA" section</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/MLDS_project.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+
+         <h3>How much variance each component explains</h3>
+            <p>
+                PCA was applied to the standardized monthly temperatures, with each year as an observation and
+                each month as a variable. The scree plot shows how the variance is distributed across the
+                components. PC1 explains 27.5% of the variance and PC2 explains 19.0%, so the first two
+                components together capture only 46%. Five components are needed to pass 80% (reaching 88%).
+            </p>
+        <a href="image/screePlot.png" target="_blank">
+          <img src="image/screePlot.png" alt="PCA Scree Plot" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+         <h3>Each year positioned by its PC1 and PC2 scores</h3>
+         <a href="image/yearsInPca.png" target="_blank">
+          <img src="image/yearsInPca.png" alt="Scatter plot of each year positioned by its PC1 and PC2 scores" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+        <p>
+        This plot places each year according to its scores on PC1 and PC2, so years that sit close
+        together had similar month-by-month temperature patterns, and the center represents an average
+        year. Along PC1, which reflects the strength of the seasonal cycle, 2022 stands far to the left
+        as the year with the most extreme contrast between summer and winter, driven by a record-cold
+        July (−32.1°C), while 2023 and 2025 sit to the right, with unusually mild winters. Along PC2,
+        2020 and 2021 sit at the top, with warm autumns followed by cold Augusts, while 2024 and 2025 sit
+        at the bottom with the opposite pattern. 2016 and 2018 lie near the center and close together,
+        indicating fairly typical years. The years are scattered rather than grouped, which is
+        consistent with the first two components capturing only 46% of the total variance. The three
+        most recent years (2023–2025) all lean toward milder winters, but three years are too few to
+        establish a trend.
+        </p>
+      </section>
+
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+         <p>
+            This analysis looked at ten years of monthly temperatures in Antarctica to understand how the
+            climate that penguins experience changes from one year to the next. The most important finding
+            is that there is no such thing as simply a "warm year" or a "cold year." A year can have a mild
+            winter but a cold autumn, or a harsh winter with an unusually warm start to summer. Each season
+            tends to behave independently, and it took five separate patterns to describe most of the
+            year-to-year differences in temperature.
+        </p>
+
+        <p>
+            The strongest pattern was how extreme the seasons were. Some years, such as 2022, had a
+            severe contrast between summer and winter, including the coldest month in the dataset, a July
+            that reached −32°C. Others, such as 2023 and 2025, had noticeably milder winters. A second
+            pattern separated years with warm autumns followed by bitter late winters, such as 2020 and
+            2021, from years with the reverse. The most recent years lean toward milder winters, but three
+            years are not enough to say whether this is a lasting trend.
+        </p>
+
+        <p>
+            For the study of penguin populations, this has a clear practical lesson: a single yearly
+            average temperature hides most of what matters. Because penguins depend on conditions at
+            specific times of year, such as the winter before the breeding season or the autumn when they
+            leave their colonies, any attempt to link penguin numbers to climate should look at
+            individual seasons rather than the year as a whole. A colony could face a brutal winter in a
+            year whose overall average looks perfectly normal.
+        </p>
+
+        <p>
+            These conclusions come with an important caution. Ten years is a short window for studying
+            climate, and a few months of data were missing and had to be estimated. The patterns found
+            here are a useful starting point for understanding how Antarctic conditions vary, but a longer
+            record would be needed to confirm them.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>
