@@ -187,13 +187,6 @@
         <p>A decision tree (DT) is a supervised machine learning model that predicts an outcome by asking a sequence of simple questions about the features. It is drawn as a tree. Each <b>internal node</b> tests one feature (for example, "is flipper length &lt; 200 mm?"), each <b>branch</b> is one answer to that test, and each <b>leaf</b> gives a final prediction. To classify a new observation, we start at the root, follow the answers down the tree, and read the prediction at the leaf we reach.</p>
         <p>The tree is learned from labeled training data. At each node, the algorithm looks for the feature and threshold that best separates the classes, splits the data accordingly, and repeats on each resulting subset until a stopping rule is met (for example, the subset is pure, or the tree reaches a maximum depth).</p>
 
-        <figure>
-          <div class="img-slot">
-            <img src="image/placeholder.png" alt="Placeholder image" style="width: 100%; height: auto;"/>
-          </div>
-          <figcaption>Placeholder caption. <i>source: </i></figcaption>
-        </figure>
-
         <h3>2. What Are Decision Trees Used For?</h3>
         <p>Decision trees can be used for <b>classification</b> (predicting a category, such as penguin species) and <b>regression</b> (predicting a number, such as body mass). They handle both numeric and categorical features, need little data preparation (no scaling is required), and are easy to interpret because the path to any prediction can be read as a series of if/then rules. Typical applications include medical diagnosis, credit risk scoring, customer churn prediction, and exploratory analysis of which features matter most. Their main weakness is that a deep tree can memorize the training data (overfit), so tree size usually has to be limited or pruned.</p>
 
