@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Decision Trees</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>Decision Trees</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <div class="dropdown">
+      <a href="clustering.html" class="dropdown-toggle">Unsupervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">Principal Component Analysis</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <a href="naivebayes.html" class="dropdown-toggle active">Supervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="naivebayes.html">Naive Bayes</a>
+        <a href="decisiontrees.html" class="active">Decision Trees</a>
+      </div>
+    </div>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-label">DECISION TREES</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data-prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <!-- ============ Content panels ============ -->
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. What Is a Decision Tree?</h3>
+        <p>A decision tree (DT) is a supervised machine learning model that predicts an outcome by asking a sequence of simple questions about the features. It is drawn as a tree. Each <b>internal node</b> tests one feature (for example, "is flipper length &lt; 200 mm?"), each <b>branch</b> is one answer to that test, and each <b>leaf</b> gives a final prediction. To classify a new observation, we start at the root, follow the answers down the tree, and read the prediction at the leaf we reach.</p>
+        <p>The tree is learned from labeled training data. At each node, the algorithm looks for the feature and threshold that best separates the classes, splits the data accordingly, and repeats on each resulting subset until a stopping rule is met (for example, the subset is pure, or the tree reaches a maximum depth).</p>
+
+        <figure>
+          <div class="img-slot">
+            <img src="image/placeholder.png" alt="Placeholder image" style="width: 100%; height: auto;"/>
+          </div>
+          <figcaption>Placeholder caption. <i>source: </i></figcaption>
+        </figure>
+
+        <h3>2. What Are Decision Trees Used For?</h3>
+        <p>Decision trees can be used for <b>classification</b> (predicting a category, such as penguin species) and <b>regression</b> (predicting a number, such as body mass). They handle both numeric and categorical features, need little data preparation (no scaling is required), and are easy to interpret because the path to any prediction can be read as a series of if/then rules. Typical applications include medical diagnosis, credit risk scoring, customer churn prediction, and exploratory analysis of which features matter most. Their main weakness is that a deep tree can memorize the training data (overfit), so tree size usually has to be limited or pruned.</p>
+
+        <h3>3. Measuring the Goodness of a Split: Gini, Entropy, and Information Gain</h3>
+        <p>To choose a split, the algorithm needs a number that says how "mixed" the classes are in a set of observations. A node containing only one class is <b>pure</b>, and the goal is to make the child nodes purer than their parent. Two common impurity measures are used, where p<sub>i</sub> is the proportion of observations in the node that belong to class i:</p>
+        <ul>
+          <li><b>Entropy</b> = &minus;&Sigma; p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>). It measures disorder in bits. It is 0 for a pure node and reaches its maximum (1 bit for two classes) when the classes are evenly mixed.</li>
+          <li><b>Gini impurity</b> = 1 &minus; &Sigma; p<sub>i</sub><sup>2</sup>. It is the probability that a randomly chosen observation would be misclassified if labeled at random according to the class proportions in the node. It is 0 for a pure node and 0.5 at its maximum for two classes. It is cheaper to compute because it needs no logarithm.</li>
+        </ul>
+        <p><b>Information Gain</b> is how much a split reduces impurity: the impurity of the parent node minus the weighted average impurity of the children, where each child is weighted by the fraction of observations it receives.</p>
+        <p style="text-align:center;">Information Gain = Impurity(parent) &minus; &Sigma; (n<sub>child</sub> / n<sub>parent</sub>) &times; Impurity(child)</p>
+        <p>Impurity is used because we cannot judge a split by looking at accuracy alone: a split can leave the majority class unchanged in both children while still making the groups much purer. Information gain turns "how much cleaner did this split make the data?" into a single number, so every candidate split can be scored and compared. The tree algorithm greedily picks the split with the highest gain at each node. (When Gini is used in place of entropy, the same formula is applied and is often called Gini gain.) The two measures usually pick the same or very similar splits.</p>
+
+        <h4>Small example</h4>
+        <p>Suppose a node contains 10 penguins: 5 Ad&eacute;lie and 5 Gentoo. This is a made-up example for illustration. We compare two candidate splits using entropy.</p>
+        <p><b>Parent node:</b> p(Ad&eacute;lie) = p(Gentoo) = 0.5, so</p>
+        <p style="margin-left:1.5rem;">Entropy = &minus;(0.5 log<sub>2</sub> 0.5 + 0.5 log<sub>2</sub> 0.5) = <b>1.000</b></p>
+        <p><b>Split A: flipper length &lt; 200 mm.</b> The left child has 5 penguins (4 Ad&eacute;lie, 1 Gentoo) and the right child has 5 penguins (1 Ad&eacute;lie, 4 Gentoo).</p>
+        <p style="margin-left:1.5rem;">Entropy of each child = &minus;(0.8 log<sub>2</sub> 0.8 + 0.2 log<sub>2</sub> 0.2) = 0.722<br/>
+        Weighted entropy = (5/10)(0.722) + (5/10)(0.722) = 0.722<br/>
+        <b>Information Gain = 1.000 &minus; 0.722 = 0.278</b></p>
+        <p><b>Split B: sex = male.</b> The left child has 5 penguins (3 Ad&eacute;lie, 2 Gentoo) and the right child has 5 penguins (2 Ad&eacute;lie, 3 Gentoo).</p>
+        <p style="margin-left:1.5rem;">Entropy of each child = &minus;(0.6 log<sub>2</sub> 0.6 + 0.4 log<sub>2</sub> 0.4) = 0.971<br/>
+        Weighted entropy = (5/10)(0.971) + (5/10)(0.971) = 0.971<br/>
+        <b>Information Gain = 1.000 &minus; 0.971 = 0.029</b></p>
+        <p>Split A has a much higher information gain (0.278 vs. 0.029), so the algorithm would choose it: it leaves the children mostly one species, while Split B leaves them nearly as mixed as the parent. Using Gini gives the same ranking. The parent has Gini = 0.5, and the children of Split A have Gini = 1 &minus; (0.8<sup>2</sup> + 0.2<sup>2</sup>) = 0.32, for a gain of 0.18. The children of Split B have Gini = 1 &minus; (0.6<sup>2</sup> + 0.4<sup>2</sup>) = 0.48, for a gain of only 0.02.</p>
+
+        <h3>4. Why Can an Infinite Number of Trees Be Built?</h3>
+        <p>For the same dataset and the same task, there are infinitely many different trees, for several reasons:</p>
+        <ul>
+          <li><b>Continuous features have unlimited thresholds.</b> A split such as "flipper length &lt; t" can use any real number t, and there are infinitely many values between any two observed measurements.</li>
+          <li><b>Features can be reused.</b> The same feature can be tested again further down a branch with a different threshold, and features can be tested in any order, so the same data can be organized in many different ways.</li>
+          <li><b>Depth is not fixed.</b> A tree can keep growing, adding more splits (including redundant ones) as long as nodes can be divided, so there is no largest tree.</li>
+        </ul>
+        <p>Many of these trees make identical predictions on the training data, but they are still different trees, and they can behave very differently on new data. Because the number of possible trees is so large, algorithms do not search all of them for the best one. They build a single tree greedily, choosing the best split at each node using a measure such as information gain. Stopping rules and pruning then keep the tree from growing too large and overfitting.</p>
+      </section>
+
+      <section id="data-prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for Decision Trees</h2>
+        <h3>1. Data Requirements for Supervised Learning</h3>
+        <p>A decision tree is a supervised method, so it can only learn from <b>labeled data</b>: every observation must come with the correct answer (the class label) the tree is trying to predict. At each node the algorithm tries candidate splits and scores them by how much purer the resulting groups are, and purity can only be measured if the true class of each example is known. Unlabeled observations cannot be used to build or to evaluate a supervised model, because there is nothing to compare predictions against.</p>
+        <p>Decision trees need relatively little preparation. Unlike distance-based methods, they do not require the features to be scaled, because each split is just a threshold on one feature. The scikit-learn implementation we use does require numeric features and no missing values.</p>
+
+        <h3>2. Preparing the Penguin Data</h3>
+        <p>For decision trees we use the same Palmer Penguins size measurements as for Naive Bayes, where each row is one individual penguin. The <b>label</b> is the penguin's species (Adélie, Chinstrap, or Gentoo), and the <b>features</b> are four physical measurements: culmen (bill) length, culmen depth, flipper length, and body mass. Species is a known, recorded label for every penguin, which makes this dataset suitable for supervised learning. The goal is to predict species from the measurements alone.</p>
+        <p>The raw file contains 344 penguins. The 10 rows with missing values were removed, leaving 334 labeled observations. A sample of the cleaned data is shown below.</p>
+        <a href=image/cleaned_penguin_size.png target="_blank">
+          <img src=image/cleaned_penguin_size.png alt="Cleaned Penguin Size Data for Decision Trees" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Data: <a href="data/cleaned_penguin_size_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+
+        <h3>3. Creating the Training and Testing Sets</h3>
+        <p>To find out how well a tree works on penguins it has not seen, the 334 labeled penguins were randomly split into two parts, using scikit-learn's <code>train_test_split</code> with <code>test_size=0.3</code> and <code>random_state=42</code> (a fixed seed so the same split can be reproduced): a <b>Training Set</b> of 233 penguins (about 70%) used to build the trees, and a <b>Testing Set</b> of 101 penguins (about 30%) held back to measure accuracy. For the Testing Set, the tree is given only the measurements, makes a prediction, and the prediction is compared with the true species label.</p>
+        <p>The two sets must be <b>disjoint</b>, meaning no penguin appears in both. A decision tree can keep splitting until it memorizes its training data, so if the test penguins were also in the training data, the tree could look very accurate just by remembering them, and the accuracy would say little about new penguins. Keeping the sets separate makes the test accuracy an honest estimate of how the tree will generalize. The split is the same one used for the Naive Bayes models, so the methods can be compared on the same test penguins.</p>
+        <p>Training Set: 233 data points.</p>
+        <a href=image/decision_tree_training.png target="_blank">
+          <img src=image/decision_tree_training.png alt="Decision Tree Training Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Testing Set: 101 data points.</p>
+        <a href=image/decision_tree_testing.png target="_blank">
+          <img src=image/decision_tree_testing.png alt="Decision Tree Test Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <p><i>Access Here:</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/decision_tree.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+        <p>
+          Three decision trees were trained on the 233-penguin Training Set (using scikit-learn's <code>DecisionTreeClassifier</code>) to predict species (Adélie, Chinstrap, or Gentoo) from culmen length, culmen depth, flipper length, and body mass. In each node, <b>value</b> lists the number of Adélie, Chinstrap, and Gentoo penguins that reach it, and the node's color shows its majority species (orange = Adélie, green = Chinstrap, purple = Gentoo), with darker colors meaning purer nodes.
+        </p>
+
+        <p>
+          All three trees used <code>random_state=42</code> and <code>min_samples_leaf=5</code>, which requires every leaf to contain at least 5 training penguins so that the tree does not split off tiny, unreliable groups. They differ in the splitting criterion (Gini or entropy) and in whether the depth is limited: Trees 1 and 2 have <code>max_depth=3</code>, and Tree 3 has no maximum depth. After training, each tree was evaluated on the 101-penguin Testing Set it had never seen.
+        </p>
+
+        <h3>I. Tree 1: Gini, max_depth = 3</h3>
+        <a href=image/tree_gini.png target="_blank">
+          <img src=image/tree_gini.png alt="Decision tree using Gini impurity" style="width: 400px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>
+          The Gini tree starts at the root with the split <b>flipper length &le; 206.5 mm</b>. The root has Gini impurity 0.644 (97 Adélie, 50 Chinstrap, 86 Gentoo). The split sends 142 penguins left (Gini 0.447) and 91 right (Gini 0.125). The weighted impurity after the split is 0.322, so the Gini gain is <b>0.644 &minus; 0.322 = 0.322</b>, the largest of any split the algorithm considered at the root.
+        </p>
+        <ul>
+          <li><b>Gentoo:</b> the right branch is almost entirely Gentoo. One more split on culmen depth (&le; 17.55 mm) produces a pure leaf of 85 Gentoo (Gini 0).</li>
+          <li><b>Adélie vs. Chinstrap:</b> the left branch separates these two species using culmen length and body mass. It finds a pure leaf of 87 Adélie (culmen length &le; 42.35 mm) and a pure leaf of 38 Chinstrap (culmen length &gt; 43.35 mm and body mass &le; 4100 g).</li>
+          <li><b>Impure leaves:</b> three leaves are still mixed: [4 Adélie, 3 Chinstrap], [4, 5, 1], and [2, 4, 0] penguins. The tree was limited to a depth of 3, so it stopped splitting here, and these are where it makes its mistakes.</li>
+        </ul>
+        <p>Counting the penguins that fall in a leaf of a different species than the leaf's majority, the tree misclassifies 10 of the 233 training penguins, a <b>training accuracy of about 95.7%</b>.</p>
+
+        <h3>II. Tree 2: Entropy, max_depth = 3</h3>
+        <a href=image/tree_entropy.png target="_blank">
+          <img src=image/tree_entropy.png alt="Decision tree using entropy" style="width: 400px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>
+          The entropy tree picks the same root split (<b>flipper length &le; 206.5 mm</b>). Here the root has entropy 1.534 and the weighted entropy of the two children is 0.749, so the <b>Information Gain is 1.534 &minus; 0.749 = 0.785</b>. The numbers differ from the Gini tree because entropy and Gini are on different scales, but both criteria agreed on the best first split, and the right branch is identical (a pure Gentoo leaf of 85, and the same [2, 4, 0] leaf).
+        </p>
+        <p>
+          The trees differ on the left branch. The entropy tree splits <b>culmen length at 42.35 mm</b> first, which immediately isolates the same pure group of 87 Adélie. The remaining 55 penguins ([8, 46, 1]) are then split on body mass into a nearly pure Chinstrap leaf (42 penguins, one Adélie) and a mixed leaf of 13 penguins ([7, 5, 1]) that it labels Adélie. This tree is smaller (5 leaves vs. 6) and has a <b>training accuracy of about 96.1%</b> (9 mistakes in 233).
+        </p>
+
+        <h3>III. Tree 3: Gini, No Maximum Depth</h3>
+        <a href=image/tree_gini_momaxdepth.png target="_blank">
+          <img src=image/tree_gini_momaxdepth.png alt="Decision tree using Gini impurity with no maximum depth" style="width: 400px; max-width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>
+          For this tree no maximum depth was specified, so it was not limited to a fixed number of levels, and only the minimum leaf size of 5 penguins keeps it from growing further. Its top three levels are identical to Tree 1, but the mixed leaf of 10 penguins ([4, 5, 1]) is now split again on culmen length (&le; 47.2 mm) into two leaves of 5 penguins: [4 Adélie, 1 Chinstrap] and [0 Adélie, 4 Chinstrap, 1 Gentoo]. This reduces the training mistakes from 10 to 7, raising the <b>training accuracy to about 97.0%</b>.
+        </p>
+
+        <h3>IV. Comparing the Trees</h3>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Tree</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Leaves</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Training mistakes</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Training accuracy</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Test mistakes</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Test accuracy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">1. Gini</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">6</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">10</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">95.7%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">2</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><b>98.0%</b></td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">2. Entropy</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">5</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">9</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">96.1%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">5</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><b>95.0%</b></td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">3. Gini, no max depth</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">7</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">7</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">97.0%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">2</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><b>98.0%</b></td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><b>Flipper length is the most important feature.</b> All three trees use it as the first split, and it nearly isolates the Gentoo species on its own.</li>
+          <li><b>Gini and entropy gave very similar trees.</b> With the same depth limit, they chose the same root split and the same Gentoo branch and differed only in how the Adélie/Chinstrap side was divided, which matches the idea that the choice of criterion matters little in practice.</li>
+          <li><b>Adélie and Chinstrap are the harder pair to separate.</b> Every impure leaf in every tree contains these two species, so the remaining errors come from penguins whose measurements overlap.</li>
+          <li><b>On the Testing Set, the two Gini trees were best and tied at 98.0% (99 of 101 correct), and the entropy tree reached 95.0% (96 of 101).</b> The entropy tree made five mistakes against two for the Gini trees, but with only 101 test penguins a gap of three penguins is small, so we should not conclude that Gini is better than entropy in general.</li>
+          <li><b>Gini and Gini with no maximum depth tied because the extra split almost never comes into play.</b> The only difference between Trees 1 and 3 is the extra split of a 10-penguin leaf, and only 2 of the 101 test penguins (both Chinstrap) reach that leaf. Both trees label them correctly, so the predictions on the Testing Set are identical, and both trees make the same two mistakes: Chinstrap penguins with small bodies (flipper length 187 mm) that land in the Adélie branch.</li>
+          <li><b>Fitting the training data better did not improve the test results.</b> Tree 3 has the highest training accuracy (97.0%), but that gain did not carry over to new penguins. Training accuracy always rises as a tree grows, so the Testing Set is what shows how well each tree generalizes.</li>
+
+        </ul>
+      </section>
+
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+        <p>
+          Decision trees predicted penguin species very accurately from four body measurements: the best trees classified 99 of the 101 penguins in the Testing Set correctly (98.0%), and the weakest still reached 95.0%. The species differ enough in size and shape that a few simple threshold questions are enough to tell them apart, and the tree shows exactly which questions those are.
+        </p>
+        <p>
+          The trees also show <i>which</i> measurements matter. Every tree starts with flipper length (&le; 206.5 mm), which nearly isolates Gentoo penguins on its own, and then uses culmen length and body mass to separate Adélie from Chinstrap. Adélie and Chinstrap are the hard pair: every remaining mistake involves them, and in the test set both errors made by the best trees were small-bodied Chinstrap penguins labeled Adélie. This agrees with the Naive Bayes results, where Chinstrap was also the species the model found hardest.
+        </p>
+        <p>
+          The choice of criterion mattered little. Gini and entropy picked the same first split and the same Gentoo branch, and differed only in how the Adélie/Chinstrap side was divided. Removing the depth limit also made no difference on the Testing Set, because the extra split affected only a handful of Chinstrap penguins. In practice, the more important choice is how much to restrict a tree: a minimum leaf size of 5 and a modest depth keep the tree small and readable without costing accuracy here.
+        </p>
+        <p>
+          What we can predict: for a new penguin from the same population, we can estimate its species from its measurements with roughly 95&ndash;98% accuracy, and we can explain each prediction as a short sequence of if/then rules. The limits are that the Testing Set has only 101 penguins, so one penguin shifts the accuracy by about one percentage point and the differences between our trees are within that noise, and that a single random split was used, so a different split could rank the trees differently. These results also describe species identification from body measurements, not trends in colony size or climate.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>
