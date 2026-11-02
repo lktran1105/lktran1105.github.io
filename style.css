@@ -72,6 +72,51 @@ nav a.active {
   border-bottom-color: var(--accent);
 }
 
+/* ---------- Dropdown groups in nav ---------- */
+
+nav .dropdown {
+  position: relative;
+}
+
+nav .dropdown-toggle.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+nav .dropdown-toggle .caret {
+  font-size: 0.7em;
+}
+
+nav .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  min-width: 100%;
+  white-space: nowrap;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.25rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+nav .dropdown:hover .dropdown-menu,
+nav .dropdown:focus-within .dropdown-menu {
+  display: block;
+}
+
+nav .dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  border-bottom: none;
+}
+
+nav .dropdown-menu a:hover {
+  background: #f6f8fa;
+}
+
 /* ---------- Page content ---------- */
 
 main {

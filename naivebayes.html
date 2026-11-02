@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Naive Bayes</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>Naive Bayes</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <div class="dropdown">
+      <a href="clustering.html" class="dropdown-toggle">Unsupervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">Principal Component Analysis</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <a href="naivebayes.html" class="dropdown-toggle active">Supervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="naivebayes.html" class="active">Naive Bayes</a>
+        <a href="decisiontrees.html">Decision Trees</a>
+      </div>
+    </div>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+  <div class="layout">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-label">NAIVE BAYES</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data-prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <!-- ============ Content panels ============ -->
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. What Is Naive Bayes?</h3>
+        <p>Naive Bayes (NB) is a supervised machine learning method used for classification. It is trained on labeled examples and then predicts the class of a new observation. It is built on Bayes' theorem, which gives the probability of each class given the observed features: P(class | features) &prop; P(class) &times; P(feature<sub>1</sub> | class) &times; P(feature<sub>2</sub> | class) &times; &hellip; The model predicts the class with the highest result.</p>
+        <p>What makes the method "naive" is its assumption that features are <b>conditionally independent given the class</b>: once the class is known, the value of one feature is assumed to tell us nothing extra about another. This is rarely exactly true, but it keeps the model simple. Every feature contributes evidence to the prediction, and the probabilities for each feature can be estimated separately. NB is therefore fast to train, works reasonably well with small datasets, and is often used as a strong baseline.</p>
+
+
+        <h3>2. What Is Naive Bayes Used For?</h3>
+        <p>NB is used for classification tasks, particularly where there are many features and limited training data. Common applications include spam filtering, document and topic categorization, sentiment analysis, and building quick baseline classifiers to compare against more complex models.</p>
+
+        <h3>3. Types of Naive Bayes</h3>
+        <p>The variants differ in how they model P(feature | class), which depends on the type of feature in the data.</p>
+        <p><b>Multinomial Naive Bayes</b> models features as <b>counts</b>, such as how many times each word appears in a document. For each class it learns how frequently each feature occurs, then classifies a new observation by asking which class's frequency pattern it resembles most. For example, a message with many occurrences of words like "free" and "winner" looks more like past spam than past non-spam. It is the standard choice for text classification and for any data made up of non-negative counts.</p>
+        <p><b>Bernoulli Naive Bayes</b> models features as <b>binary</b> values: each feature is either present (1) or absent (0), regardless of how many times it occurs. In text, this means only whether a word appears in a document, not how often. Unlike multinomial NB, it also treats the <i>absence</i> of a feature as evidence for or against a class. It suits short texts and data that are naturally yes/no.</p>
+        <p><b>Gaussian Naive Bayes</b> models <b>continuous</b> features by assuming that, within each class, each feature follows a normal distribution. For example, in the penguin data it would assume body mass is normally distributed separately for each species, using that class's own mean and standard deviation.</p>
+      </section>
+
+      <section id="data-prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for Naive Bayes</h2>
+        <h3>1. Data Requirements for Supervised Learning</h3>
+        <p>Naive Bayes is a supervised method, so it can only learn from <b>labeled data</b>: every observation must come with the correct answer (the class label) that the model is trying to predict. The model learns how the features are distributed within each class, and it can only do that if it knows which class each example belongs to. Unlabeled observations cannot be used to train or to evaluate a supervised model, because there would be nothing to compare the predictions against.</p>
+        <p>The data must also be in a numeric, complete form that the chosen Naive Bayes variant can use (for example, continuous measurements for Gaussian NB, or non-negative counts for multinomial NB), with no missing values.</p>
+
+        <h3>2. Preparing the Penguin Data</h3>
+        <p>For Naive Bayes we use the Palmer Penguins size measurements, where each row is one individual penguin. The <b>label</b> is the penguin's species (Adélie, Chinstrap, or Gentoo), and the model uses physical measurements as <b>features</b>: culmen (bill) length and flipper length. Species is a known, recorded label for every penguin, which makes this dataset suitable for supervised learning. The goal is to predict a penguin's species from its measurements alone.</p>
+        <p>The raw file contains 344 penguins. Rows with missing values (10 penguins) were removed, leaving 334 labeled observations. A sample of the cleaned data is shown below.</p>
+        <a href=image/cleaned_penguin_size.png target="_blank">
+          <img src=image/cleaned_penguin_size.png alt="Cleaned Penguin Size Data for Naive Bayes" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Data: <a href="data/cleaned_penguin_size_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+
+        <h3>3. Creating the Training and Testing Sets</h3>
+        <p>To find out how well a model works on penguins it has not seen, the labeled data was randomly split into two parts: a <b>Training Set</b> (about 70%) used to build the model, and a <b>Testing Set</b> (about 30%) held back to measure its accuracy. For the testing set, the model is given only the features, makes a prediction, and that prediction is then compared with the true species label.</p>
+        <p>The two sets must be <b>disjoint</b>, meaning no penguin appears in both. If the testing data were also used in training, the model would have already seen those examples, so it could appear accurate simply by memorizing them. The accuracy would then say little about how it performs on new penguins. Keeping the sets separate means the test accuracy is an honest estimate of how the model will generalize.</p>
+        <p>Training Set: 233 data points.</p>
+        <a href=image/supervised_learning_train.png target="_blank">
+          <img src=image/supervised_learning_train.png alt="Supervised Learning Training Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Testing Set: 101 data points.</p>
+        <a href=image/supervised_learning_test.png target="_blank">
+          <img src=image/supervised_learning_test.png alt="Supervised Learning Test Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <p><i>Scroll to "Naive Bayes" section</i></p>
+        <a href="https://colab.research.google.com/github/lktran1105/lktran1105.github.io/blob/main/naive_bayes.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab">
+        </a>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+        <h3>I. Confusion Matrix</h3>
+        <a href=image/confusionmatrix_naivebayes.png target="_blank">
+          <img src=image/confusionmatrix_naivebayes.png alt="Confusion matrix for Naive Bayes on the testing set" style="width: 300px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>
+          The confusion matrix summarizes how the Naive Bayes model performed on the 101 penguins in the testing set, which it never saw during training. Each row is the true species and each column is the predicted species (labels 0, 1, and 2 correspond to Adélie, Chinstrap, and Gentoo). The diagonal shows correct predictions and every off-diagonal cell is a mistake.
+        </p>
+
+        <h3>II. Performance</h3>
+        <p>
+          The model correctly classified <b>98 of 101</b> test penguins, an overall accuracy of about <b>97%</b>. Per class:
+        </p>
+        <ul>
+          <li><b>Class 0 (Adélie):</b> all 49 were identified correctly (recall 100%). Of the 51 penguins predicted as class 0, 49 were correct (precision 96%), because two penguins from class 1 were wrongly labeled as class 0.</li>
+          <li><b>Class 1 (Chinstrap):</b> 15 of 18 were identified correctly (recall 83%). Every penguin predicted as class 1 really was class 1 (precision 100%), but the model missed three of them: two were predicted as class 0 and one as class 2.</li>
+          <li><b>Class 2 (Gentoo):</b> all 34 were identified correctly (recall 100%). Of the 35 penguins predicted as class 2, 34 were correct (precision 97%).</li>
+        </ul>
+
+        <h3>III. Interpretation</h3>
+        <p>
+          All three errors came from class 1, so the model's weakness is specific to that species and is not spread across the data. Two things likely contribute. Class 1 is the smallest group (18 of 101 test penguins, and the fewest training examples), so the model has less data to learn its feature distributions and a lower prior probability for it. Its measurements may also overlap with those of the other species, and a penguin near the boundary between two classes is the one the model is most likely to get wrong. Since Naive Bayes also assumes the features are independent given the species, and culmen length and flipper length are likely to be correlated, the probabilities it computes near those boundaries will not be perfectly calibrated.
+        </p>
+        <p>
+          Overall, even with its simple independence assumption, Naive Bayes separated the three species very well using only two measurements. With only 101 test points, a single penguin changes the accuracy by about one percentage point, so the exact figures should be read as an estimate rather than a precise measure.
+        </p>
+      </section>
+
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+        <p>
+          Using only two body measurements, culmen length and flipper length, a Naive Bayes model identified penguin species correctly for about 97% of the penguins in the testing set (98 of 101). This tells us that the three species differ enough in size and shape that their physical measurements are a strong signal of which species an individual is, even under the simplifying assumption that the features are independent of each other.
+        </p>
+        <p>
+          The model is not equally good at every species. Adélie and Gentoo were identified perfectly, while all of the mistakes came from Chinstrap penguins, three of the 18 in the testing set. Chinstrap is the smallest group in the data and appears to overlap the others in its measurements, so it is the species we would expect to be most confused with the others, and the one where a prediction deserves the least trust.
+        </p>
+        <p>
+          What this lets us predict: given the culmen length and flipper length of a new penguin from the same population, we can predict its species with high confidence, which is useful when a species cannot be observed directly. Because the model produces probabilities, it can also flag uncertain cases, such as individuals near the boundary between two species, for a closer look.
+        </p>
+        <p>
+          There are limits to what we can conclude. The testing set has only 101 penguins, so the accuracy is an estimate and could shift by about a point for every penguin that is classified differently. The data also comes from one set of measurements, so we cannot say how well the model would perform on penguins from other colonies or years. Finally, this model predicts species from body measurements. It does not by itself tell us anything about how colony sizes or the climate are changing, which the clustering and other sections of this project address.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>
