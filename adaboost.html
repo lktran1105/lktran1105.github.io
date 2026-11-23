@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AdaBoost</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+
+  .img-placeholder {
+    border: 2px dashed #c4c9d0;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #6b7280;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .img-placeholder b { display: block; color: #4b5563; margin-bottom: 0.25rem; }
+  .code-block {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .todo { color: #9ca3af; font-style: italic; }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>AdaBoost</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <div class="dropdown">
+      <a href="clustering.html" class="dropdown-toggle">Unsupervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">Principal Component Analysis</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <a href="naivebayes.html" class="dropdown-toggle active">Supervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="naivebayes.html">Naive Bayes</a>
+        <a href="decisiontrees.html">Decision Trees</a>
+        <a href="regression.html">Regression</a>
+        <a href="adaboost.html" class="active">AdaBoost</a>
+      </div>
+    </div>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-label">ADABOOST</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data-prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. What Is Boosting?</h3>
+        <p><b>Boosting</b> is an ensemble method that combines many simple, weak models into one strong model. A <b>weak learner</b> is a model that is only slightly better than random guessing. Boosting builds the learners <b>one after another</b>, and each new learner is trained to <b>focus on the observations that the earlier learners got wrong</b>. The final prediction combines all of them, so the mistakes of any single learner are corrected by the others.</p>
+
+        <h3>2. Boosting vs. Bagging</h3>
+        <p>Bagging (as in random forests) and boosting are both ensembles of trees, but they work in opposite ways:</p>
+        <ul>
+          <li><b>Bagging builds trees independently and in parallel.</b> Each tree is trained on a random bootstrap sample of the data, and the trees vote equally. It mainly reduces <b>variance</b> (overfitting) by averaging many deep, flexible trees.</li>
+          <li><b>Boosting builds trees sequentially.</b> Each tree depends on the ones before it, because the data is reweighted to emphasize earlier mistakes, and the trees do <b>not</b> vote equally. It mainly reduces <b>bias</b> by combining many shallow, simple trees.</li>
+        </ul>
+        <a href=image/boosting_vs_bagging.jpeg target="_blank">
+          <img src=image/boosting_vs_bagging.jpeg alt="Decision Tree Test Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+        <h3>3. Decision Stumps</h3>
+        <p>The weak learner AdaBoost most often uses is a <b>decision stump</b>: a decision tree with a single split (depth 1). A stump asks just one question about one feature, such as "is flipper length &lt; 206.5 mm?", and predicts a class on each side. One stump is a weak classifier, since it can only draw one straight boundary along one feature, but it is fast to train and, being better than chance, it is enough for boosting to build on.</p>
+
+        <h3>4. How AdaBoost Works</h3>
+        <p>AdaBoost (Adaptive Boosting) starts by giving each of the N training rows the same weight, w<sub>i</sub> = 1/N. Then, for each round t = 1, 2, &hellip;, T:</p>
+        <ol>
+          <li><b>Fit a stump</b> to the training data, using the current row weights. The split is chosen to minimize the <i>weighted</i> error, so heavy rows count more.</li>
+          <li><b>Compute the stump's weighted error</b> &epsilon;<sub>t</sub>: the sum of the weights of the rows it misclassified.</li>
+          <li><b>Compute the stump's weight</b> &alpha;<sub>t</sub> (explained below).</li>
+          <li><b>Reweight the rows:</b> increase the weights of the misclassified rows and decrease the weights of the correctly classified ones, then normalize so the weights sum to 1.</li>
+        </ol>
+        <p>The next stump therefore sees a version of the problem where the rows that were hard so far matter most, and it is forced to pay attention to them. For two classes coded as &minus;1 and +1, the update is:</p>
+        <p style="text-align:center;">w<sub>i</sub> &larr; w<sub>i</sub> &times; e<sup>&minus;&alpha;<sub>t</sub> y<sub>i</sub> h<sub>t</sub>(x<sub>i</sub>)</sup></p>
+        <p>where y<sub>i</sub> h<sub>t</sub>(x<sub>i</sub>) is +1 when the stump is right and &minus;1 when it is wrong. A correct row is multiplied by e<sup>&minus;&alpha;</sup> (smaller than 1) and a wrong row by e<sup>&alpha;</sup> (larger than 1).</p>
+        <a href=image/adaboost1.png target="_blank">
+          <img src=image/adaboost1.png alt="Decision Tree Test Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <h3>5. The Stump Weight &alpha;</h3>
+        <p>Not every stump deserves the same say in the final answer. The weight, or "amount of say," of stump t is:</p>
+        <p style="text-align:center;">&alpha;<sub>t</sub> = &frac12; ln((1 &minus; &epsilon;<sub>t</sub>) / &epsilon;<sub>t</sub>)</p>
+        <ul>
+          <li>If the stump is <b>very accurate</b> (&epsilon; close to 0), &alpha; is large and positive, so it gets a big say.</li>
+          <li>If the stump is <b>no better than guessing</b> (&epsilon; = 0.5), &alpha; = 0, so it gets no say.</li>
+          <li>If the stump is <b>worse than guessing</b> (&epsilon; &gt; 0.5), &alpha; is negative, so its vote is flipped. (In practice this is avoided, since the stump can simply be inverted.)</li>
+        </ul>
+        <p>&alpha; plays two roles: it sets how much that stump counts in the final vote, and it sets how aggressively the rows are reweighted after the stump. For example, &epsilon; = 0.2 gives &alpha; = &frac12; ln(4) &asymp; 0.69, while &epsilon; = 0.4 gives &alpha; = &frac12; ln(1.5) &asymp; 0.20.</p>
+
+        <h3>6. The Final Weighted Vote</h3>
+        <p>After T rounds, a new observation x is classified by letting every stump vote, with each vote multiplied by that stump's &alpha;. For two classes (&minus;1 and +1):</p>
+        <p style="text-align:center;">H(x) = sign( &alpha;<sub>1</sub>h<sub>1</sub>(x) + &alpha;<sub>2</sub>h<sub>2</sub>(x) + &hellip; + &alpha;<sub>T</sub>h<sub>T</sub>(x) )</p>
+        <p>The class with the larger total &alpha; across the stumps that voted for it wins. For more than two classes (such as the three penguin species), the same idea applies: the &alpha; of the stumps voting for each class is added up, and the class with the highest total is predicted. Because accurate stumps have large &alpha;, a few reliable stumps can outvote many weak ones, and the combination of many weak stumps can draw a boundary far more flexible than any single stump.</p>
+
+      </section>
+
+      <section id="data-prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for AdaBoost</h2>
+        <h3>1. Data Requirements for Supervised Learning</h3>
+        <p>AdaBoost is a supervised method, so it can only learn from <b>labeled data</b>: every observation must come with the correct class label. The algorithm re-weights each training row according to whether the current stump classified it correctly, which is only possible when the true label of every row is known. Unlabeled rows cannot be used to train or to evaluate the model.</p>
+        <p>AdaBoost in scikit-learn (<code>AdaBoostClassifier</code>) also needs <b>numeric inputs with no missing values</b>, so any categorical column must be converted to numbers first. Like a single decision tree, it does not need the numeric features to be scaled, because each stump is just a threshold on one feature.</p>
+
+        <h3>2. Preparing the Penguin Data</h3>
+        <p>We use the Palmer Penguins size data, where each row is one individual penguin. The <b>label</b> is the penguin's <b>species</b> (Adélie, Chinstrap, or Gentoo), and the <b>features</b> are <code>sex</code> and four measurements: <code>culmen_length_mm</code>, <code>culmen_depth_mm</code>, <code>flipper_length_mm</code>, and <code>body_mass_g</code>. The <code>island</code> column was left out of the features, because island and species overlap heavily, so island would reveal much of the answer.</p>
+        <p>The raw file has 344 penguins. Rows with missing values were dropped (<code>dropna()</code>), leaving 334. Checking the distinct values of the text columns showed one invalid entry, a <code>sex</code> value of "." instead of MALE or FEMALE, so that row was removed too, leaving <b>333 labeled penguins</b>. A sample of the cleaned data is shown below.</p>
+        <a href=image/cleaned_penguin_size.png target="_blank">
+          <img src=image/cleaned_penguin_size.png alt="Cleaned Penguin Size Data for Regression" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>        
+        <p>Data: <a href="data/cleaned_penguin_size_data_regression.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+
+        <h3>3. Turning Categorical Columns into Numbers</h3>
+        <p>The four measurements are already numeric. The feature <code>sex</code> is text (MALE or FEMALE), and the model cannot use text, so it was converted with <b>one-hot encoding</b> (<code>OneHotEncoder</code>): each category becomes its own 0/1 column that is 1 when the penguin belongs to that category. This is safer than coding the categories as numbers such as 1 and 2, which would invent an order between them. The example below shows the idea:</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Before</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">sex_FEMALE</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">sex_MALE</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">sex = MALE</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">sex = FEMALE</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="code-block"><code>onehot_encoder = OneHotEncoder(sparse_output=False)
+sex_encoded = onehot_encoder.fit_transform(penguin_size_cleaned[["sex"]])
+sex_df = pd.DataFrame(sex_encoded,
+                      columns=onehot_encoder.get_feature_names_out(["sex"]),
+                      index=penguin_size_cleaned.index)
+
+numeric_cols = ["culmen_length_mm", "culmen_depth_mm", "flipper_length_mm", "body_mass_g"]
+X = pd.concat([penguin_size_cleaned[numeric_cols], sex_df], axis=1)
+y = penguin_size_cleaned["species"]</code></pre>
+        <p>The final feature table has six numeric columns: the four measurements plus <code>sex_FEMALE</code> and <code>sex_MALE</code>. Unlike the regression models, both sex columns are kept, because a stump can split on either one and there is no coefficient to make redundant. The target <code>species</code> does not need encoding, because scikit-learn accepts class names directly.</p>
+
+        <h3>4. Creating the Training, Validation, and Testing Sets</h3>
+        <p>AdaBoost has settings to tune (the number of stumps <code>n_estimators</code> and the <code>learning_rate</code>), so the data was split into <b>three</b> parts rather than two, using <code>train_test_split</code> twice with a fixed seed (<code>random_state=42</code>) so the split can be reproduced, and <code>stratify</code> so each part keeps the same share of each species:</p>
+        <ul>
+          <li>First, 15% of the penguins were set aside as the final <b>Testing Set</b> (<b>50 penguins</b>). The other 85% (283 penguins) were kept for building the model.</li>
+          <li>Then that 85% was split into a <b>Training Set</b> of <b>233 penguins</b> (about 70% of the total) and a <b>Validation Set</b> of <b>50 penguins</b> (about 15%), using <code>test_size = 0.15 / 0.85 &asymp; 0.1765</code>.</li>
+        </ul>
+        <pre class="code-block"><code># Final test set (15%), then train (70%) and validation (15%) from the rest
+X_temp, X_test, y_temp, y_test = train_test_split(
+    X, y, test_size=0.15, stratify=y, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(
+    X_temp, y_temp, test_size=0.1765, stratify=y_temp, random_state=42)</code></pre>
+        <p>The Training Set is used to fit the stumps, the Validation Set is used to compare settings, and the Testing Set is used once, at the end, to measure accuracy. The sets must be <b>disjoint</b>, meaning no penguin appears in more than one. AdaBoost keeps increasing the weight of the rows it gets wrong, so with enough rounds it can fit even unusual training rows, and if test penguins were in the training data the model could look accurate simply by having memorized them. Keeping the Testing Set untouched, and not using it to choose settings, makes the test accuracy an honest estimate of how the model will generalize.</p>
+        <p>Training Set: 233 data points.</p>
+        <p>Validation Set: 50 data points.</p>
+        <p>Testing Set: 50 data points.</p>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebook, please click the "Open In Colab" button below.</i></p>
+        <p>The notebook has six steps: (1) clean the data, (2) one-hot encode <code>sex</code>, select features, and split into training, validation, and testing sets, (3) fit and tune the model, (4) predict on the Testing Set, (5) compare with a decision tree, and (6) interpret the results. The tuning and prediction steps are shown here.</p>
+        <pre class="code-block"><code># 3. Tune n_estimators and learning_rate on the validation set
+results = []
+for lr in [0.01, 0.1, 0.5, 1.0]:
+    for n in [10, 25, 50, 100, 200]:
+        model = AdaBoostClassifier(n_estimators=n, learning_rate=lr, random_state=42)
+        model.fit(X_train, y_train)
+        results.append({"learning_rate": lr, "n_estimators": n,
+                        "train_acc": model.score(X_train, y_train),
+                        "val_acc": model.score(X_val, y_val)})
+
+# 4. Refit the chosen settings on train + validation, then predict on the test set
+model_final = AdaBoostClassifier(n_estimators=50, learning_rate=1, random_state=42)
+model_final.fit(X_temp, y_temp)
+y_pred = model_final.predict(X_test)
+accuracy_score(y_test, y_pred)</code></pre>
+        <p><i>Access Here:</i></p>
+        <p><b>AdaBoost notebook</b></p>
+        <a href="adaboost.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open AdaBoost notebook In Colab">
+        </a>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+        <h3>I. Tuning</h3>
+        <p>AdaBoost with the default decision stump (<code>AdaBoostClassifier</code>) was fit on the 233-penguin Training Set for 20 combinations of <code>learning_rate</code> (0.01, 0.1, 0.5, 1.0) and <code>n_estimators</code> (10, 25, 50, 100, 200), and each was scored on the 50-penguin Validation Set. The five best were:</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">learning_rate</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">n_estimators</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Training accuracy</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Validation accuracy</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">1.0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">200</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">99.1%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">1.0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">99.1%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">1.0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">50</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">99.1%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">1.0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">25</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">98.7%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100%</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">0.5</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">100</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">97.4%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">98%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>With <code>learning_rate = 1.0</code>, validation accuracy reached 100% by 25 rounds and stayed there, and lower learning rates improved more slowly. Since 50, 100, and 200 stumps performed the same, the simplest setting where both training and validation accuracy had leveled off was chosen: <b><code>n_estimators = 50</code> and <code>learning_rate = 1.0</code></b>, which also needs less computing.</p>
+
+        <h3>II. Test Results</h3>
+        <p>The chosen model was refit on the training and validation penguins together (283 penguins) and then used once on the 50-penguin Testing Set. It reached <b>96% accuracy (48 of 50 correct)</b>, slightly below its 100% validation accuracy, which is expected with only about 50 penguins in each set.</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;"></th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Predicted Adélie</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Predicted Chinstrap</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Predicted Gentoo</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Actual Adélie</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">20</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Actual Chinstrap</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">10</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Actual Gentoo</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">18</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Both errors were Adélie penguins: one was predicted as a Chinstrap and one as a Gentoo. All Chinstrap and Gentoo penguins were classified correctly.</p>
+
+        <h3>III. Comparison with a Decision Tree</h3>
+        <p>A single Gini decision tree, with the same settings as on the Decision Trees page, was fit on the same training and validation penguins and scored on the same Testing Set. It reached <b>92% accuracy (46 of 50)</b>.</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Model</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Test accuracy</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Correct</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Errors</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">AdaBoost (50 stumps)</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">96%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">48 of 50</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">2, both Adélie</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Decision tree</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">92%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">46 of 50</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">4, across all three species</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><b>AdaBoost beat the single tree (96% vs. 92%).</b> The tree made errors in all three species: 1 Adélie as Chinstrap, 1 Chinstrap as Adélie, and 2 Gentoo as Chinstrap.</li>
+          <li><b>A likely reason</b> is that the tree is one model limited to a shallow depth, while AdaBoost combines 50 stumps with a weighted vote. Because each round gives more weight to penguins that earlier stumps misclassified, later stumps focus on the hard cases near the species boundaries.</li>
+          <li><b>The gap is small.</b> It is only 2 penguins on a 50-penguin test set, so AdaBoost's advantage is real but modest.</li>
+        </ul>
+      </section>
+
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+        <p>
+          AdaBoost predicted penguin species from sex and four body measurements with 96% accuracy on the Testing Set (48 of 50 penguins). Tuning showed that the model needed few stumps: with a learning rate of 1.0, validation accuracy reached 100% by 25 rounds, so 50 stumps were enough.
+        </p>
+        <p>
+          AdaBoost made two mistakes, both Adélie penguins (one labeled Chinstrap and one Gentoo), and classified every Chinstrap and Gentoo correctly. Compared with a single depth-limited decision tree on the same data (92%), it made half as many errors, and the tree's mistakes were spread across all three species. This fits the idea behind boosting: by re-weighting the penguins that earlier stumps got wrong, later stumps concentrate on the hard cases near the species boundaries, and the weighted vote of many simple stumps is more accurate than one tree.
+        </p>
+        <p>
+          What we can predict: for a new penguin from the same population, we can estimate its species from its measurements with roughly 92&ndash;96% accuracy, and AdaBoost looks slightly better than a single tree. The limits are that the Testing Set has only 50 penguins, so each penguin shifts the accuracy by two percentage points and the 2-penguin gap between AdaBoost and the tree is within that noise, that a single random split was used, and that the validation accuracy of 100% was higher than the test accuracy, a reminder that tuning on a small validation set can be a little optimistic.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>

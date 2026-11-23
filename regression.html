@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Regression</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  :root {
+    --accent-bg: #fafafa;
+    --text: #1f2328;
+    --muted: #6b7280; 
+    --border: #e5e7eb;
+    --page-bg: #f4f4f6;
+  }
+
+  /* ---------- Layout: sidebar + content ---------- */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .sidebar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tab-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .tab-link:hover {
+    background: #f9fafb;
+    color: var(--text);
+  }
+
+  .tab-link.active {
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ---------- Content ---------- */
+
+  .content {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 400px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .tab-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+
+  .tab-panel h2 .bar {
+    width: 4px;
+    height: 1.4rem;
+    background: var(--accent);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tab-panel h3 {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+  }
+
+  .info-block {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .info-block strong,
+  .info-block em {
+    display: block;
+    font-style: italic;
+  }
+
+  .img-placeholder {
+    border: 2px dashed #c4c9d0;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #6b7280;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .img-placeholder b { display: block; color: #4b5563; margin-bottom: 0.25rem; }
+  .code-block {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+  .todo { color: #9ca3af; font-style: italic; }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>Regression</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Intro</a>
+    <a href="dataprep.html">Data Preparation</a>
+    <div class="dropdown">
+      <a href="clustering.html" class="dropdown-toggle">Unsupervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="clustering.html">Clustering</a>
+        <a href="pca.html">Principal Component Analysis</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <a href="naivebayes.html" class="dropdown-toggle active">Supervised Learning <span class="caret">▾</span></a>
+      <div class="dropdown-menu">
+        <a href="naivebayes.html">Naive Bayes</a>
+        <a href="decisiontrees.html">Decision Trees</a>
+        <a href="regression.html" class="active">Regression</a>
+        <a href="adaboost.html">AdaBoost</a>
+      </div>
+    </div>
+    <a href="conclusion.html">Conclusion</a>
+  </nav>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-label">REGRESSION</div>
+      <nav class="sidebar-nav">
+        <button class="tab-link active" data-target="overview">Overview</button>
+        <button class="tab-link" data-target="data-prep">Data Preparation</button>
+        <button class="tab-link" data-target="code">Code</button>
+        <button class="tab-link" data-target="results">Results</button>
+        <button class="tab-link" data-target="conclusion">Conclusion</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+
+      <section id="overview" class="tab-panel active">
+        <h2><span class="bar"></span>Overview</h2>
+
+        <h3>1. Two Kinds of Regression</h3>
+        <p><b>Linear regression</b> and <b>logistic regression</b> are both supervised models that combine the features into a single weighted sum, called the <b>linear score</b>: z = b<sub>0</sub> + b<sub>1</sub>x<sub>1</sub> + b<sub>2</sub>x<sub>2</sub> + &hellip; + b<sub>p</sub>x<sub>p</sub>. The coefficients b are learned from labeled training data. What differs is what the model does with that score, and therefore what it predicts.</p>
+
+        <h3>2. Linear Regression: Predicting a Number</h3>
+        <p>Linear regression predicts a <b>continuous numeric value</b>, such as a penguin's body mass or a house's price. The prediction is the linear score itself: &ycirc; = z. Geometrically, with one feature the model is the straight line that best fits the data, and with several features it is a flat plane (or hyperplane). The coefficients are chosen to minimize the <b>sum of squared errors</b> between the predicted and true values, so each b tells us how much the prediction changes when that feature increases by one unit and the others stay fixed.</p>
+        <a href=image/linear_regression_example.jpg target="_blank">
+          <img src=image/linear_regression_example.jpg alt="Linear Regression" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+        <h3>3. Logistic Regression: Predicting a Class</h3>
+        <p>Logistic regression is a <b>classification</b> model. It predicts a <b>category</b> (for example, spam or not spam, or one penguin species versus another), and more precisely it predicts the <b>probability</b> that an observation belongs to a class. A linear score cannot be used directly for this, because z can be any number from &minus;&infin; to +&infin;, while a probability must lie between 0 and 1.</p>
+        <a href=image/logistic_regression_example.webp target="_blank">
+          <img src=image/logistic_regression_example.webp alt="Logistic Regression" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+
+        <h4>From a linear score to a probability: the sigmoid</h4>
+        <p>Logistic regression fixes this by passing the score through the <b>sigmoid</b> (logistic) function:</p>
+        <p style="text-align:center;">p = &sigma;(z) = 1 / (1 + e<sup>&minus;z</sup>)</p>
+        <p>The sigmoid squashes any real number into the range (0, 1) with an S-shaped curve. A large positive score gives a probability near 1, a large negative score gives a probability near 0, and a score of exactly 0 gives p = 0.5. Equivalently, the linear score is the <b>log-odds</b> of the class: z = ln(p / (1 &minus; p)), so each unit increase in a feature multiplies the odds by e<sup>b</sup>.</p>
+
+        <h4>From a probability to a class</h4>
+        <p>To make a final decision, the probability is compared with a <b>threshold</b>, usually 0.5: if p &ge; 0.5 the model predicts class 1, otherwise class 0. Because p = 0.5 exactly when z = 0, the boundary between the classes is where the linear score equals zero, which is a straight line (or plane) in feature space. The threshold can be moved: lowering it catches more positives at the cost of more false alarms. For more than two classes, the model either fits one logistic regression per class or uses the softmax function, and predicts the class with the highest probability.</p>
+        <p>The coefficients are learned by maximizing the likelihood of the training labels (equivalently, minimizing the <b>log loss</b>), rather than by least squares.</p>
+
+        <h3>4. How They Differ</h3>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;"></th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Linear regression</th>
+              <th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Logistic regression</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Predicts</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">A number</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">A probability, then a class</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Output</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">z, any real value</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">&sigma;(z), between 0 and 1</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Label type</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Continuous</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Categorical</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Loss function</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Squared error</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Log loss (cross-entropy)</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Evaluated with</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">RMSE, R&sup2;</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Accuracy, confusion matrix</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </section>
+
+      <section id="data-prep" class="tab-panel">
+        <h2><span class="bar"></span>Data Preparation for Regression</h2>
+        <h3>1. Data Requirements for Supervised Learning</h3>
+        <p>Both linear and logistic regression are supervised methods, so they can only learn from <b>labeled data</b>: every observation must come with the correct answer (the target) that the model is trying to predict. The coefficients are fit by comparing the model's predictions with the true targets, which is impossible for unlabeled rows. The two models need different kinds of target, and both need numeric features with no missing values:</p>
+        <ul>
+          <li><b>Linear regression needs a numeric (continuous) target.</b> We predict a penguin's <b>body mass in grams</b> (<code>body_mass_g</code>).</li>
+          <li><b>Logistic regression needs a two-class label.</b> We predict a penguin's <b>sex</b> (<code>sex</code>: FEMALE or MALE), which has exactly two classes.</li>
+        </ul>
+
+        <h3>2. Preparing the Penguin Data</h3>
+        <p>We use the Palmer Penguins size data, where each row is one individual penguin. The raw file has 344 penguins. Rows with missing values were dropped (<code>dropna()</code>), leaving 334. Checking the distinct values of the text columns then showed one invalid entry, a <code>sex</code> value of "." instead of MALE or FEMALE, so that row was removed too. The result is <b>333 labeled penguins</b> (168 male and 165 female), which are used for both models so that they can be compared on the same penguins. A sample of the cleaned data is shown below.</p>
+        <a href=image/cleaned_penguin_size.png target="_blank">
+          <img src=image/cleaned_penguin_size.png alt="Cleaned Penguin Size Data for Regression" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Data: <a href="data/cleaned_penguin_size_data_regression.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+        <p>The <code>island</code> column was left out of both models, because island and species overlap heavily (for example, nearly all Gentoo penguins live on Biscoe), so it adds little beyond species. The text columns that are used, <code>species</code> and <code>sex</code>, have to be turned into numbers first. The columns used by each model are:</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Model</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Target (label)</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Numeric features</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Categorical features (encoded)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Linear regression</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>body_mass_g</code> (numeric)</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>culmen_length_mm</code>, <code>culmen_depth_mm</code>, <code>flipper_length_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>species</code> &rarr; <code>species_Chinstrap</code>, <code>species_Gentoo</code><br/><code>sex</code> &rarr; <code>sex_MALE</code></td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Logistic regression</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>sex</code> (FEMALE = 0, MALE = 1)</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>culmen_length_mm</code>, <code>culmen_depth_mm</code>, <code>flipper_length_mm</code>, <code>body_mass_g</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;"><code>species</code> &rarr; <code>species_Chinstrap</code>, <code>species_Gentoo</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Encoding the categorical columns</h4>
+        <p>Regression multiplies each feature by a coefficient, so text must become numbers. <b>One-hot encoding</b> was used: each category becomes its own 0/1 column. With <code>OneHotEncoder(drop="first")</code> the first category is dropped (Adélie for species, FEMALE for sex), because it is already implied when all the other columns are 0. Dropping it also avoids perfectly redundant columns, which would make the linear model's coefficients unstable. The dropped category becomes the <b>baseline</b> against which the other coefficients are read. For logistic regression the target <code>sex</code> was label-encoded instead (<code>LabelEncoder</code>: FEMALE = 0, MALE = 1).</p>
+
+        <h4>Scaling (logistic regression only)</h4>
+        <p>For logistic regression the numeric features were <b>standardized</b> with <code>StandardScaler</code> (mean 0, standard deviation 1), so that features measured in very different units (grams versus millimeters) are on the same scale and the optimizer converges reliably. It also makes the coefficients comparable: each one describes the effect of a one-standard-deviation change. The scaler was fit on the Training Set only and then applied to the Testing Set, so that no information from the test penguins leaks into training. Linear regression was fit on the unscaled features, so that its coefficients stay in their natural units (grams per millimeter).</p>
+
+        <h3>3. Creating the Training and Testing Sets</h3>
+        <p>To find out how well each model works on penguins it has not seen, the 333 labeled penguins were randomly split with scikit-learn's <code>train_test_split</code>, using <code>test_size=0.3</code> and <code>random_state=42</code> (a fixed seed so the split can be reproduced): a <b>Training Set</b> of <b>233 penguins</b> (about 70%) used to fit the coefficients, and a <b>Testing Set</b> of <b>100 penguins</b> (about 30%) held back to measure performance. For logistic regression the split was also <b>stratified</b> by sex, so both sets keep the same share of males and females (the Testing Set has 50 of each). For the Testing Set, the model is given only the features, makes a prediction, and the prediction is compared with the true value (body mass for linear regression, sex for logistic regression).</p>
+        <p>The two sets must be <b>disjoint</b>, meaning no penguin appears in both. A regression fit adjusts its coefficients to the training rows, so if test penguins were also in the training data, the model would be graded on rows it had already used to learn, and its error would look better than it really is. Keeping the sets separate makes the test error (or test accuracy) an honest estimate of how the model will do on new penguins.</p>
+        <p>Training Set: 233 data points.</p>
+        <p>Testing Set: 100 data points.</p>
+        <a href=image/image/training_testing_set.png target="_blank">
+          <img src=image/training_testing_set.png alt="Training and Tesing Data" style="width: 150px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+        </a>
+        <p>Data: <a href="data/cleaned_penguin_size_data.csv" target="_blank" rel="noopener noreferrer">View Dataset</a></p>
+      </section>
+
+      <section id="code" class="tab-panel">
+        <h2><span class="bar"></span>Code</h2>
+        <p><i>Note: To access the interactive notebooks, please click the "Open In Colab" buttons below.</i></p>
+        <p>Each notebook follows the same steps: (1) clean the data, (2) encode and select features, (3) split into training and testing sets, (4) fit the model, (5) predict on the Testing Set and evaluate. The key steps are shown here.</p>
+
+        <h3>Linear Regression: predict body mass</h3>
+        <pre class="code-block"><code># 1. Clean: drop missing values and the invalid sex "."
+penguin_size_cleaned = penguin_size.dropna()
+penguin_size_cleaned = penguin_size_cleaned[penguin_size_cleaned["sex"].isin(["MALE", "FEMALE"])]
+
+# 2. One-hot encode species and sex (first category dropped)
+encoder = OneHotEncoder(sparse_output=False, drop="first")
+encoded_data = encoder.fit_transform(penguin_size_cleaned[["species", "sex"]])
+
+# 3. Features, target, and split
+X = encoded_penguin_size[["culmen_length_mm", "culmen_depth_mm", "flipper_length_mm",
+                          "species_Chinstrap", "species_Gentoo", "sex_MALE"]]
+y = encoded_penguin_size["body_mass_g"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 4-5. Fit, predict, evaluate
+lin_reg = LinearRegression().fit(X_train, y_train)
+y_pred = lin_reg.predict(X_test)
+r2_score(y_test, y_pred); root_mean_squared_error(y_test, y_pred)</code></pre>
+        <p><b>Linear regression notebook</b></p>
+        <a href="linear_regression.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open Linear regression notebook In Colab">
+        </a>
+
+        <h3>Logistic Regression: predict sex</h3>
+        <pre class="code-block"><code># 2. One-hot encode species; label-encode the target sex (FEMALE = 0, MALE = 1)
+onehot_encoder = OneHotEncoder(sparse_output=False, drop="first")
+species_df = ...  # species_Chinstrap, species_Gentoo
+X = pd.concat([penguin_size_cleaned[numeric_cols], species_df], axis=1)
+y = LabelEncoder().fit_transform(penguin_size_cleaned["sex"])
+
+# 3. Stratified split, then standardize (fit the scaler on the training set only)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 4-5. Fit, predict, evaluate
+log_reg = LogisticRegression().fit(X_train_scaled, y_train)
+y_pred = log_reg.predict(X_test_scaled)
+accuracy_score(y_test, y_pred)</code></pre>
+        <p><b>Logistic regression notebook</b></p>
+        <a href="logistic_regression.ipynb" target="_blank" rel="noopener noreferrer">
+          <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open Logistic regression notebook In Colab">
+        </a>
+        <p>The logistic regression notebook also fits a Gaussian Naive Bayes model (<code>GaussianNB</code>) on the same split, so that the two classifiers can be compared on the same test penguins.</p>
+      </section>
+
+      <section id="results" class="tab-panel">
+        <h2><span class="bar"></span>Results</h2>
+        <h3>I. Linear Regression: Predicting Body Mass</h3>
+        <p>A linear regression was fit on the 233-penguin Training Set (using <code>LinearRegression</code>) and then used to predict body mass for the 100 penguins in the Testing Set. The fitted equation has an intercept of &minus;1509.65 g and these coefficients, listed by size:</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Feature</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Coefficient</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Meaning</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>species_Gentoo</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">+1042.26</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">A Gentoo is predicted to weigh about 1042 g more than an Adélie with the same measurements</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>sex_MALE</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">+390.21</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">A male is predicted to weigh about 390 g more than a female of the same species and measurements</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>species_Chinstrap</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">&minus;201.06</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">A Chinstrap is predicted to weigh about 201 g less than an Adélie with the same measurements</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>culmen_depth_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">+67.88</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">Each extra 1 mm of culmen depth adds about 68 g</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>flipper_length_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">+16.48</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">Each extra 1 mm of flipper length adds about 16 g</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>culmen_length_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">+15.94</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">Each extra 1 mm of culmen length adds about 16 g</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Each coefficient is read holding all the other features fixed, and the species and sex coefficients are measured against the baseline categories (Adélie and female).</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Metric (Testing Set)</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Value</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">R&sup2;</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0.8924</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">RMSE</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">254.5 g</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Standard deviation of the true body masses</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">779.8 g</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><b>R&sup2; = 0.89:</b> the model explains about 89% of the variation in penguin body mass.</li>
+          <li><b>RMSE = 254.5 g:</b> the predictions are typically off by about 255 g. Always guessing the average mass would be off by roughly the standard deviation (779.8 g), so the model's error is about one-third of that baseline.</li>
+          <li><b>Actual vs. predicted plot:</b> the test points cluster tightly around the y = x line, with no strong systematic bias. The model slightly overestimates the lightest penguins and underestimates the heaviest, and a few penguins are off by 500&ndash;700 g, which account for most of the RMSE.</li>
+        </ul>
+
+        <h3>II. Logistic Regression: Predicting Sex</h3>
+        <p>A logistic regression (<code>LogisticRegression</code>) was fit on the standardized Training Set (intercept 0.114) and used to predict sex for the 100 Testing Set penguins. Because the features were standardized, each odds ratio (e<sup>coefficient</sup>) is the factor by which the odds of MALE are multiplied for a one-standard-deviation increase in that feature:</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Feature</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Coefficient</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Odds ratio</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>culmen_depth_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">2.795</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">16.37</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>body_mass_g</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">2.655</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">14.23</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>culmen_length_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1.787</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">5.97</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>species_Chinstrap</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">&minus;1.427</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0.24</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>species_Gentoo</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">&minus;1.176</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0.31</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><code>flipper_length_mm</code></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">0.051</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">1.05</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>For example, each one-standard-deviation increase in culmen depth multiplies the odds that a penguin is male by about 16, holding species, culmen length, flipper length and body mass fixed. Flipper length gets almost no weight (odds ratio near 1) once body mass is in the model, because the two measurements are strongly correlated and carry much the same information.</p>
+        <p><b>Test accuracy: 94%</b> (94 of 100 correct). The confusion matrix shows 47 of 50 females and 47 of 50 males classified correctly, with three errors in each direction.</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;"></th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Predicted female</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Predicted male</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Actual female</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">47</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">3</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;"><b>Actual male</b></td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">3</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">47</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>III. Logistic Regression vs. Naive Bayes</h3>
+        <p>A Gaussian Naive Bayes model fit on the same split reached only <b>77% accuracy</b> (77 of 100), against 94% for logistic regression, about 17 more penguins wrong. Naive Bayes mislabeled 14 females as male and 9 males as female.</p>
+        <table style="border-collapse: collapse; margin-bottom: 1rem;">
+          <thead><tr><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: left;">Model</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Test accuracy</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Female &rarr; male errors</th><th style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Male &rarr; female errors</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Logistic regression</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">94%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">3</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">3</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem;">Naive Bayes</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">77%</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">14</td>
+              <td style="border: 1px solid #d0d7de; padding: 0.4rem 0.75rem; text-align: center;">9</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li><b>Independence assumption.</b> Naive Bayes treats the measurements as independent, but they are strongly correlated, so it counts the same "large penguin" evidence several times and distorts its probabilities. Logistic regression fits all the weights together, so it shares credit among correlated features.</li>
+          <li><b>Species differences.</b> Naive Bayes models each measurement with one distribution per sex across all species, but species differ a lot in size, so a heavy female Gentoo can look "male" by Adélie standards. Logistic regression's species coefficients shift its boundary for each species, so it can separate the sexes within each species.</li>
+        </ul>
+      </section>
+
+      <section id="conclusion" class="tab-panel">
+        <h2><span class="bar"></span>Conclusion</h2>
+        <p>
+          Regression worked well on both tasks. Linear regression predicted a penguin's body mass from its species, sex, and bill and flipper measurements with R&sup2; = 0.89 and a typical error of about 255 g, about one-third of the spread in body mass. Logistic regression predicted a penguin's sex from its measurements and species with 94% accuracy on the Testing Set.
+        </p>
+        <p>
+          The coefficients show <i>why</i>. In the linear model, species is the largest effect (Gentoo penguins are about 1 kg heavier than Adélie of similar size), followed by sex (males are about 390 g heavier), and each extra millimeter of culmen depth adds about 68 g. In the logistic model, culmen depth and body mass have the strongest effect on the odds of a penguin being male, while flipper length adds almost nothing once body mass is included because the two are so correlated.
+        </p>
+        <p>
+          The comparison with Naive Bayes shows why the logistic model's joint fit matters: logistic regression made 6 errors, while Naive Bayes made 23, because the independence assumption does not hold for correlated size measurements and because Naive Bayes ignores that the species differ greatly in size.
+        </p>
+        <p>
+          What we can predict: for a new penguin from the same population, we can estimate its body mass to within roughly 250 g, and tell its sex correctly about 94% of the time. The limits are that the Testing Set has only 100 penguins (so one penguin shifts the accuracy by one percentage point), that a single random split was used, that a straight-line model misses any curvature in the relationship (the largest and smallest penguins are slightly over- and under-predicted), and that these results describe penguins in this dataset, not other populations.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const panels = document.querySelectorAll(".tab-panel");
+
+    tabLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        const targetId = link.getAttribute("data-target");
+
+        tabLinks.forEach((l) => l.classList.remove("active"));
+        panels.forEach((p) => p.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(targetId).classList.add("active");
+      });
+    });
+  </script>
+
+</body>
+</html>

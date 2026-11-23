@@ -28,6 +28,8 @@
       <div class="dropdown-menu">
         <a href="naivebayes.html">Naive Bayes</a>
         <a href="decisiontrees.html">Decision Trees</a>
+        <a href="regression.html">Regression</a>
+        <a href="adaboost.html">AdaBoost</a>
       </div>
     </div>
     <a href="conclusion.html">Conclusion</a>
@@ -53,6 +55,20 @@
     <h2>Existing Gaps</h2>
     <p>
       Current approaches to monitoring penguin populations rely on long-term field surveys, colony counts, and satellite observations to track population trends and assess conservation status. These methods have generated valuable datasets; for example, long-term count data combined with statistical models have revealed significant spatial and temporal variation in African penguin population declines (Sherley et al., 2020). Similarly, climate-driven demographic models have been used to project emperor penguin population dynamics by linking colony-level demographic data with sea ice conditions and climate projections (Jenouvrier 2014). However, many studies rely on data from a limited number of well-monitored colonies and must extrapolate findings to broader regions, introducing uncertainty in global population estimates (Jenouvrier, 2014). The logistical challenges of fieldwork in Antarctica also mean that data collection is often seasonal and spatially sparse, leaving significant gaps in continuous monitoring. Remote sensing technologies have partially addressed this limitation by enabling consistent, large-scale coverage of penguin habitats, but their interpretation requires sophisticated analytical frameworks. In addition, traditional monitoring approaches often analyze population data separately from environmental drivers such as climate variability and sea ice changes. Few studies apply modern data mining or machine learning methods to jointly model ecological and climatic variables at the continental scale. Integrating ecological observations with environmental datasets and advanced spatio-temporal analytics can help uncover deeper patterns and improve conservation planning for penguin populations. This project aims to address these gaps by combining multiple data sources and applying computational methods that are scalable and reproducible.
+    </p>
+
+    <h2>Data and Approach</h2>
+    <p>
+      This project brings together two kinds of data. The climate record comes from NOAA's National Centers for Environmental Information, accessed through the Climate Data Online API, and is aggregated to a single continent-wide value per month for Antarctica. The penguin record comes from a downloaded colony census file (the Mapping Application for Penguin Populations and Projected Dynamics), where each row is a count of one species at one colony in one breeding season. Because the two sources are collected at different scales and frequencies, much of the early work focuses on cleaning, aligning, and visualizing them so that population change can be compared with temperature over the same time periods. For the supervised learning models, we also use the Palmer Penguins size measurements, which pair each individual penguin's species and sex with its bill, flipper, and body mass measurements.
+    </p>
+    <div style="text-align: center;">
+      <img src="image/palmer_penguin_dataset.png" alt="Palmer Penguins dataset" style="max-width: 100%; height: auto;"/>
+    </div>
+    <p>
+      The analysis applies a range of data mining and machine learning methods, each chosen for a different question. Unsupervised methods look for structure without labels: clustering groups penguin colonies by their population level and variability, and principal component analysis reduces the monthly climate record to a few components that capture its main patterns. Supervised methods learn from labeled examples and are evaluated on held-out data they have not seen: Naive Bayes, decision trees, linear and logistic regression, and AdaBoost are used to predict penguin species, body mass, and sex from physical measurements, and to compare how a simple model, a single tree, and a boosted ensemble of trees perform on the same data. Each method is documented on its own page with its overview, data preparation, code, results, and conclusions.
+    </p>
+    <p>
+      The goal of this work is to show what these methods can and cannot tell us, and to do so in a way that others can reproduce. Every page records how its data was prepared, how it was split into training and testing sets, and how the results were measured, so that the strengths and limits of each model are stated alongside its findings. The models here describe patterns in the available datasets, and they should not be read as proof that climate change causes a given population change. Even so, a clear, comparable set of methods applied to penguin and climate data is a step toward the more integrated, scalable analyses that the gaps above call for, and toward conservation decisions that rest on evidence rather than on sparse, isolated surveys.
     </p>
 
     <h3>Potential Research Questions</h3>
